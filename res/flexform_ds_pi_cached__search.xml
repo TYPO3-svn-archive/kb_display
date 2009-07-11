@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<type>array</type>
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>LLL:EXT:kb_display/locallang.xml:pi_cached_search</sheetTitle>
+		</TCEforms>
+		<el>
+			<field_search_fields>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_search__search_fields</label>
+						<config>
+							<type>select</type>
+							<size>10</size>
+							<autoSizeMax>35</autoSizeMax>
+							<maxitems>30</maxitems>
+							<items>
+							</items>
+							<itemsProcFunc>EXT:kb_display/class.tx_kbdisplay_itemsProc.php:&amp;tx_kbdisplay_itemsProc->compareFields</itemsProcFunc>
+						</config>
+				</TCEforms>
+			</field_search_fields>
+		</el>
+	</ROOT>
+</T3DataStructure>

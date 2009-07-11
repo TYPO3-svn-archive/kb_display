@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for extension 'kb_display'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="pi_cached_title">KB Display - Cached</label>
+			<label index="pi_cached_plus_wiz_description">Insert an instance of the kb_display FE plugin. Cached version.</label>
+
+
+			<label index="pi_cached_sDEF">Basic settings</label>
+			<label index="pi_cached_sDEF_templateFile_listView">Template file: List view</label>
+			<label index="pi_cached_sDEF_templateFile_singleView">Template file: Single view</label>
+			<label index="pi_cached_sDEF_table">Display table</label>
+			<label index="pi_cached_sDEF_pages">Items on page(s)</label>
+			<label index="pi_cached_sDEF_pages_recursive_NO">No recursion</label>
+			<label index="pi_cached_sDEF_pages_recursive_1">1 Level</label>
+			<label index="pi_cached_sDEF_pages_recursive_2">2 Levels</label>
+			<label index="pi_cached_sDEF_pages_recursive_3">3 Levels</label>
+			<label index="pi_cached_sDEF_pages_recursive_INF">Infinite</label>
+			<label index="pi_cached_sDEF_disableSingleView">Disable single-view</label>
+
+
+			<label index="pi_cached_listView">List-View</label>
+			<label index="pi_cached_listView_disableListView">Disable list-view</label>
+			<label index="pi_cached_listView_itemsPerPage">Items per page</label>
+			<label index="pi_cached_listView_showPagebrowser">Show Pagebrowser</label>
+			<label index="pi_cached_listView_pagesInBrowser">Pages in page-browser</label>
+
+			<label index="pi_cached_tables">Additional tables</label>
+			<label index="pi_cached_tables__list_tables__item_table">Additional table</label>
+			<label index="pi_cached_tables__list_tables__item_table__table">Join table</label>
+			<label index="pi_cached_tables__list_tables__item_table__jointype">Join-Type</label>
+			<label index="pi_cached_tables__list_tables__item_table__jointype_innerjoin">Inner join</label>
+			<label index="pi_cached_tables__list_tables__item_table__jointype_leftjoin">Left join</label>
+			<label index="pi_cached_tables__list_tables__item_table__jointype_query">Additional query</label>
+			<label index="pi_cached_tables__list_tables__item_table__combineResult">Combine result rows</label>
+
+			<label index="pi_cached_tables__list_tables__item_table__resultname">Result name</label>
+
+			<label index="pi_cached__criteriaConnector">Criteria connector</label>
+			<label index="pi_cached__criteriaConnector_AND">AND</label>
+			<label index="pi_cached__criteriaConnector_OR">OR</label>
+
+			<label index="pi_cached_criteria">Criteria</label>
+			<label index="pi_cached_subcriteria">Sub-Criteria</label>
+			<label index="pi_cached_criteria__showFilters">Show filters</label>
+			<label index="pi_cached_criteria__compare_field">Compare field</label>
+			<label index="pi_cached_criteria__compare_field__pid">PID</label>
+			<label index="pi_cached_criteria__compare_field__uid">UID</label>
+			<label index="pi_cached_criteria__compare_field__crdate">Creation date</label>
+			<label index="pi_cached_criteria__compare_field__tstamp">Modification date</label>
+			<label index="pi_cached_criteria__compare_field__cruser_id">Created by</label>
+			<label index="pi_cached_criteria__compare_field__deleted">Deleted</label>
+			<label index="pi_cached_criteria__compare_field__hidden">Hidden</label>
+			<label index="pi_cached_criteria__compare_field__starttime">Start time</label>
+			<label index="pi_cached_criteria__compare_field__endtime">End time</label>
+			<label index="pi_cached_criteria__compare_field__fe_group">Accessible by</label>
+
+			<label index="pi_cached_criteria__compare_custom">Custom compare</label>
+			<label index="pi_cached_criteria__compare_usersel">User selectable value (FE)</label>
+			<label index="pi_cached_criteria__compare_defaultNone">No results by default (FE)</label>
+			<label index="pi_cached_criteria__compare_negate">Negate result</label>
+
+			<label index="pi_cached_criteria__compare_type__number">Number compare type</label>
+
+			<label index="pi_cached_criteria__compare_type__string">String compare type</label>
+			<label index="pi_cached_criteria__compare_type__string__like">SQL-"Like" compare value</label>
+			<label index="pi_cached_criteria__compare_type__string__begins">Begins with compare value</label>
+			<label index="pi_cached_criteria__compare_type__string__ends">Ends with compare value</label>
+			<label index="pi_cached_criteria__compare_type__string__contains">Contains compare value</label>
+			<label index="pi_cached_criteria__compare_type__string__equals">Equals compare value</label>
+
+			<label index="pi_cached_criteria__compare_type__date">Date compare type</label>
+			<label index="pi_cached_criteria__compare_type__date__before">Before compared date</label>
+			<label index="pi_cached_criteria__compare_type__date__after">Past compared date</label>
+			<label index="pi_cached_criteria__compare_type__date__at">Exactly at compared date</label>
+			<label index="pi_cached_criteria__compare_type__date__beforeNow">Before now</label>
+			<label index="pi_cached_criteria__compare_type__date__afterNow">After now</label>
+
+			<label index="pi_cached_criteria__compare_type__time">Time compare type</label>
+			<label index="pi_cached_criteria__compare_type__time__before">Before compared time</label>
+			<label index="pi_cached_criteria__compare_type__time__after">Past compared time</label>
+			<label index="pi_cached_criteria__compare_type__time__at">Exactly at compared time</label>
+			<label index="pi_cached_criteria__compare_type__time__beforeNow">Before now</label>
+			<label index="pi_cached_criteria__compare_type__time__afterNow">After now</label>
+
+			<label index="pi_cached_criteria__compare_type__number">Number compare type</label>
+			<label index="pi_cached_criteria__compare_type__number__smaller">Smaller than compare value</label>
+			<label index="pi_cached_criteria__compare_type__number__bigger">Bigger than compare value</label>
+			<label index="pi_cached_criteria__compare_type__number__equals">Equals compared value</label>
+			<label index="pi_cached_criteria__compare_type__number__in">In list of compared values</label>
+
+			<label index="pi_cached_criteria__compare_value">Compared value</label>
+			<label index="pi_cached_criteria__compare_value__multibool">Checkbox values compared</label>
+			<label index="pi_cached_criteria__compare_value__string">String value compared</label>
+			<label index="pi_cached_criteria__compare_value__bool">Boolean value compared</label>
+			<label index="pi_cached_criteria__compare_value__date">Date value compared</label>
+			<label index="pi_cached_criteria__compare_value__time">Time value compared</label>
+			<label index="pi_cached_criteria__compare_value__timesec">Duration value compared</label>
+			<label index="pi_cached_criteria__compare_value__datetime">Date/Time value compared</label>
+			<label index="pi_cached_criteria__compare_value__year">Compared year</label>
+			<label index="pi_cached_criteria__compare_value__int">Integer value compared</label>
+			<label index="pi_cached_criteria__compare_value__dateoffset">Date-Offset value compared</label>
+			<label index="pi_cached_criteria__compare_value__double">Float value compared</label>
+			<label index="pi_cached_criteria__compare_value__cruser_id">Creating-User value compared</label>
+			<label index="pi_cached_criteria__compare_value__fe_group">Access rights group compared</label>
+			<label index="pi_cached_criteria__compare_value__pid">PID compare value</label>
+			<label index="pi_cached_criteria__compare_value__uid">UID compare value</label>
+
+			<label index="pi_cached_criteria__compare_compareField">Compare to field</label>
+			<label index="pi_cached_criteria__compare_compareField_none">Select field</label>
+
+			<label index="pi_cached_sorting">Sorting</label>
+			<label index="pi_cached_sorting__sort_field">Sort field</label>
+			<label index="pi_cached_sorting__sort_field_none">[None]</label>
+			<label index="pi_cached_sorting__sort_direction">Sort direction</label>
+			<label index="pi_cached_sorting__sort_direction_ASC">Ascending</label>
+			<label index="pi_cached_sorting__sort_direction_DESC">Descending</label>
+			<label index="pi_cached_sorting__sort_custom">Custom sorting</label>
+
+			<label index="pi_cached_filters">Filters</label>
+
+			<label index="pi_cached_search">Search</label>
+			<label index="pi_cached_search__search_fields">Search fields</label>
+		</languageKey>
+	</data>
+</T3locallang>

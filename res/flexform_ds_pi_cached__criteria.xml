@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<type>array</type>
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>LLL:EXT:kb_display/locallang.xml:pi_cached_criteria</sheetTitle>
+		</TCEforms>
+		<el>
+			<field_criteriaConnector>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteriaConnector_tpl.xml</field_criteriaConnector>
+			<list_criteria_section>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteria_tpl.xml</list_criteria_section>
+		</el>
+	</ROOT>
+</T3DataStructure>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<type>array</type>
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>LLL:EXT:kb_display/locallang.php:pi_cached_ordering</sheetTitle>
+		</TCEforms>
+		<el>
+			<list_order_section type="array">
+				<type>array</type>
+				<section>1</section>
+				<el type="array">
+					<list_order_item type="array">
+						<type>array</type>
+						<label>LLL:EXT:kb_shop/locallang.php:pi1.sheet_listView.list_order_section.list_order_item</label>
+						<tx_templavoila type="array">
+							<title>Order item</title>
+						</tx_templavoila>
+						<el type="array">
+							<field_list_order>
+								<TCEforms>
+									<exclude>1</exclude>
+									<label>LLL:EXT:kb_shop/locallang.php:pi1.sheet_listView.list_order_section.list_order_item.field_list_order</label>
+									<config>
+										<type>select</type>
+										<items>
+											<numIndex index="1" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.crdate</numIndex>
+												<numIndex index="1">crdate</numIndex>
+											</numIndex>
+											<numIndex index="2" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.tstamp</numIndex>
+												<numIndex index="1">tstamp</numIndex>
+											</numIndex>
+											<numIndex index="3" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.cruser_id</numIndex>
+												<numIndex index="1">cruser_id</numIndex>
+											</numIndex>
+											<numIndex index="4" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.deleted</numIndex>
+												<numIndex index="1">deleted</numIndex>
+											</numIndex>
+											<numIndex index="5" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.hidden</numIndex>
+												<numIndex index="1">hidden</numIndex>
+											</numIndex>
+											<numIndex index="6" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.starttime</numIndex>
+												<numIndex index="1">starttime</numIndex>
+											</numIndex>
+											<numIndex index="7" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.endtime</numIndex>
+												<numIndex index="1">endtime</numIndex>
+											</numIndex>
+											<numIndex index="8" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.fe_group</numIndex>
+												<numIndex index="1">fe_group</numIndex>
+											</numIndex>
+											<numIndex index="9" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.sorting</numIndex>
+												<numIndex index="1">sorting</numIndex>
+											</numIndex>
+											<numIndex index="10" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:field.category</numIndex>
+												<numIndex index="1">category</numIndex>
+											</numIndex>
+										</items>
+									</config>
+								</TCEforms>
+							</field_list_order>
+							<field_order_user>
+								<TCEforms>
+									<label>LLL:EXT:kb_shop/locallang.php:pi1.sheet_listView.list_order_section.list_order_item.field_order_user</label>
+									<exclude>1</exclude>
+									<config>
+										<type>check</type>
+									</config>
+								</TCEforms>
+							</field_order_user>
+							<field_order_custom>
+								<TCEforms>
+									<label>LLL:EXT:kb_shop/locallang.php:pi1.sheet_listView.list_order_section.list_order_item.field_order_custom</label>
+									<exclude>1</exclude>
+									<config>
+										<type>input</type>
+										<max>1000</max>
+									</config>
+								</TCEforms>
+							</field_order_custom>
+							<field_list_direction>
+								<TCEforms>
+									<exclude>1</exclude>
+									<label>LLL:EXT:kb_shop/locallang.php:pi1.sheet_listView.list_order_section.list_order_item.field_list_direction</label>
+									<config>
+										<type>select</type>
+										<items>
+											<numIndex index="1" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:direction.ascending</numIndex>
+												<numIndex index="1">ASC</numIndex>
+											</numIndex>
+											<numIndex index="2" type="array">
+												<numIndex index="0">LLL:EXT:kb_shop/locallang.php:direction.descending</numIndex>
+												<numIndex index="1">DESC</numIndex>
+											</numIndex>
+										</items>
+									</config>
+								</TCEforms>
+							</field_list_direction>
+						</el>
+					</list_order_item>
+				</el>
+			</list_order_section>
+		</el>
+	</ROOT>
+</T3DataStructure>

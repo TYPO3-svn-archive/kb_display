@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<type>array</type>
+	<section>1</section>
+	<el type="array">
+		<list_criteria_item type="array">
+			<type>array</type>
+			<label>LLL:EXT:kb_display/locallang.xml:pi_cached_criteria</label>
+			<tx_templavoila type="array">
+				<title>Criteria item</title>
+			</tx_templavoila>
+			<el type="array">
+				<field_compare_field>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteriaCompareField_tpl.xml</field_compare_field>
+				<field_compare_custom>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_custom.xml</field_compare_custom>
+<!--
+				<field_compare_usersel>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_usersel.xml</field_compare_usersel>
+-->
+				<field_compare_defaultNone>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_defaultNone.xml</field_compare_defaultNone>
+
+				<field_compare_negate>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_negate.xml</field_compare_negate>
+
+				<field_compare_number>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_type__number.xml</field_compare_number>
+				<field_compare_date>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_type__date.xml</field_compare_date>
+				<field_compare_string>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_type__string.xml</field_compare_string>
+				<field_compare_multibool>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_type__multibool.xml</field_compare_multibool>
+
+				<field_compare_value_string>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__string.xml</field_compare_value_string>
+				<field_compare_value_bool>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__bool.xml</field_compare_value_bool>
+				<field_compare_value_date>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__date.xml</field_compare_value_date>
+				<field_compare_value_time>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__time.xml</field_compare_value_time>
+				<field_compare_value_timesec>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__timesec.xml</field_compare_value_timesec>
+				<field_compare_value_datetime>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__datetime.xml</field_compare_value_datetime>
+				<field_compare_value_year>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__year.xml</field_compare_value_year>
+				<field_compare_value_int>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__int.xml</field_compare_value_int>
+				<field_compare_value_dateoffset>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__dateoffset.xml</field_compare_value_dateoffset>
+				<field_compare_value_double>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__double.xml</field_compare_value_double>
+				<field_compare_value_cruser_id>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__cruser_id.xml</field_compare_value_cruser_id>
+				<field_compare_value_fe_group>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__fe_group.xml</field_compare_value_fe_group>
+				<field_compare_value_pid>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__pid.xml</field_compare_value_pid>
+				<field_compare_value_uid>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_value__uid.xml</field_compare_value_uid>
+
+				<field_compare_compareField>includeXML:EXT:kb_display/res/compare_fields/flexform__compare_compareField.xml</field_compare_compareField>
+			</el>
+		</list_criteria_item>
+		<list_subcriteria>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__subcriteria_tpl.xml</list_subcriteria>
+	</el>
+</T3DataStructure>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF</sheetTitle>
+		</TCEforms>
+		<el>
+			<field_templateFile_listView type="array">
+				<TCEforms>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_templateFile_listView</label>
+					<exclude>1</exclude>
+					<config>
+						<type>input</type>
+						<size>30</size>
+						<eval>trim</eval>
+						<default></default>
+					</config>
+				</TCEforms>
+			</field_templateFile_listView>
+			<field_templateFile_singleView type="array">
+				<TCEforms>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_templateFile_singleView</label>
+					<exclude>1</exclude>
+					<config>
+						<type>input</type>
+						<size>30</size>
+						<eval>trim</eval>
+						<default></default>
+					</config>
+				</TCEforms>
+			</field_templateFile_singleView>
+			<field_table type="array">
+				<TCEforms>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_table</label>
+					<exclude>1</exclude>
+					<config>
+						<type>select</type>
+						<special>tables</special>
+						<size>1</size>
+						<iconsInOptionTags>1</iconsInOptionTags>
+					</config>
+				</TCEforms>
+			</field_table>
+			<field_pages type="array">
+				<TCEforms>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_pages</label>
+					<exclude>1</exclude>
+					<config>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>8</size>
+						<autoSizeMax>20</autoSizeMax>
+						<minitems>0</minitems>
+						<maxitems>50</maxitems>
+					</config>
+				</TCEforms>
+			</field_pages>
+			<field_pages_recursive>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_pages_recursive</label>
+					<config>
+						<type>select</type>
+						<items>
+							<numIndex index="0" type="array">
+								<numIndex index="0">LLL:EXT:kb_display/locallang.php:pi_cached_sDEF_pages_recursive_NO</numIndex>
+								<numIndex index="1">0</numIndex>
+							</numIndex>
+							<numIndex index="1" type="array">
+								<numIndex index="0">LLL:EXT:kb_display/locallang.php:pi_cached_sDEF_pages_recursive_1</numIndex>
+								<numIndex index="1">1</numIndex>
+							</numIndex>
+							<numIndex index="2" type="array">
+								<numIndex index="0">LLL:EXT:kb_display/locallang.php:pi_cached_sDEF_pages_recursive_2</numIndex>
+								<numIndex index="1">2</numIndex>
+							</numIndex>
+							<numIndex index="3" type="array">
+								<numIndex index="0">LLL:EXT:kb_display/locallang.php:pi_cached_sDEF_pages_recursive_3</numIndex>
+								<numIndex index="1">3</numIndex>
+							</numIndex>
+							<numIndex index="4" type="array">
+								<numIndex index="0">LLL:EXT:kb_display/locallang.php:pi_cached_sDEF_pages_recursive_INF</numIndex>
+								<numIndex index="1">99</numIndex>
+							</numIndex>
+						</items>
+					</config>
+				</TCEforms>
+			</field_pages_recursive>
+			<field_disableSingleView>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_disableSingleView</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+			</field_disableSingleView>
+		</el>
+	</ROOT>
+</T3DataStructure>

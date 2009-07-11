@@ -1,0 +1,6 @@
+
+* When a "compareField" is selected, hide "compareValue" field
+
+* Create code (compare template) which handles the "compareField"
+
+

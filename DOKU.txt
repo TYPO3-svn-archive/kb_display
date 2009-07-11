@@ -1,0 +1,14 @@
+
+
+templateFile / templateFile.
+Sets the template file to render
+
+showUid.
+The parameters piVars[showUid] gets passed through this stdWrap, so it can get altered or overwritten
+
+singleView. / listView.
+Those arrays contain the configuration for either single or list view
+
+
+
+

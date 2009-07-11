@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<type>array</type>
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>LLL:EXT:kb_shop/locallang.php:pi1.sheet_search</sheetTitle>
+		</TCEforms>
+		<el>
+			<field_search_page type="array">
+				<TCEforms>
+					<label>LLL:EXT:kb_shop/locallang.php:pi1.sheet_search.search_page</label>
+					<exclude>1</exclude>
+					<config>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>1</size>
+						<minitems>0</minitems>
+						<maxitems>1</maxitems>
+					</config>
+				</TCEforms>
+			</field_search_page>
+			<field_show_searchbox type="array">
+				<TCEforms>
+					<label>LLL:EXT:kb_shop/locallang.php:pi1.sheet_search.show_searchbox</label>
+					<exclude>1</exclude>
+					<config>
+						<type>check</type>
+					</config>
+					<displayCond>FIELD:field_search_page:REQ:true</displayCond>
+				</TCEforms>
+			</field_show_searchbox>
+		</el>
+	</ROOT>
+</T3DataStructure>
+

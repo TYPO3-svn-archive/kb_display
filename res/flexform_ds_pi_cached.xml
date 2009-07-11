@@ -1,0 +1,17 @@
+<T3DataStructure>
+	<meta type="array">
+		<langDisable type="integer">1</langDisable>
+	</meta>
+	<sheets>
+		<sDEF>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__sDEF.xml</sDEF>
+		<sheet_listView>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__listView.xml</sheet_listView>
+		<sheet_tables>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__tables.xml</sheet_tables>
+		<sheet_criteria>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteria.xml</sheet_criteria>
+		<sheet_filters>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__filters.xml</sheet_filters>
+		<sheet_sorting>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__sorting.xml</sheet_sorting>
+		<sheet_search>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__search.xml</sheet_search>
+<!--
+		<sheet_search>EXT:kb_display/res/flexform_ds_pi_cached__search.xml</sheet_search>
+-->
+	</sheets>
+</T3DataStructure>

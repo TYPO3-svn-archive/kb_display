@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<type>array</type>
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>LLL:EXT:kb_display/locallang.xml:pi_cached_filters</sheetTitle>
+		</TCEforms>
+		<el>
+			<field_showFilters type="array">
+				<TCEforms>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__showFilters</label>
+					<exclude>1</exclude>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+			</field_showFilters>
+			<field_filtersConnector>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteriaConnector_tpl.xml</field_filtersConnector>
+			<list_filters_section>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteria_tpl.xml</list_filters_section>
+		</el>
+	</ROOT>
+</T3DataStructure>

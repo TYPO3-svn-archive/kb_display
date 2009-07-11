@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<type>array</type>
+	<section>1</section>
+	<el type="array">
+		<list_sorting_item type="array">
+			<type>array</type>
+			<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sorting</label>
+			<tx_templavoila type="array">
+				<title>Sorting item</title>
+			</tx_templavoila>
+			<el type="array">
+				<field_sort_field>includeXML:EXT:kb_display/res/sorting/flexform__sorting_field.xml</field_sort_field>
+				<field_sort_direction>includeXML:EXT:kb_display/res/sorting/flexform__sorting_direction.xml</field_sort_direction>
+				<field_sort_custom>includeXML:EXT:kb_display/res/sorting/flexform__sorting_custom.xml</field_sort_custom>
+			</el>
+		</list_sorting_item>
+	</el>
+</T3DataStructure>
