@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2009 Bernhard Kraft <kraftb@kraftb.at>
+*  (c) 2008-2009 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -28,7 +28,7 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
 /**
  * Class handling the ordering/sorting elements of the BE plugin flexform
  *
- * @author	Bernhard Kraft <kraftb@kraftb.at>
+ * @author	Bernhard Kraft <kraftb@think-open.at>
  * @package	TYPO3
  * @subpackage	tx_kbt3tris
  */

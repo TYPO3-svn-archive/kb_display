@@ -2,7 +2,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'KB Display',
-	'description' => 'An extension allowing to display data from almost any database table - probably other data sources',
+	'description' => 'This extension allows you to display list and detail view of ANY table for which a TCA array is configured. No more "list/detail" FE-plugin coding. Makes life a lot easier. Documentation on forge wiki: http://forge.typo3.org/wiki/extension-kb_display',
 	'category' => 'fe',
 	'shy' => 0,
 	'dependencies' => '',
@@ -17,7 +17,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 1,
 	'lockType' => '',
 	'author' => 'Kraft Bernhard',
-	'author_email' => 'kraftb@kraftb.at',
+	'author_email' => 'kraftb@think-open.at',
 	'author_company' => '',
 	'CGLcompliance' => '',
 	'CGLcompliance_note' => '',
