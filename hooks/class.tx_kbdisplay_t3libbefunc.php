@@ -154,6 +154,10 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 								$fieldCriteriaConfig['field_compare_type_number']['TCEforms']['displayCond'] .= ','.$field;
 								$fieldCriteriaConfig['field_compare_value_double']['TCEforms']['displayCond'] .= ','.$field;
 							break;
+							case 'nospace':
+							case 'uniqueInPid':
+							case 'required':
+							break;
 							default:
 								print_r(array_keys($fieldCriteriaConfig));
 								print_r($fieldConfig);
