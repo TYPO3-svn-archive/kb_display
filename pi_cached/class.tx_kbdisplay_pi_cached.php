@@ -37,6 +37,32 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_rowProcessor.php');
  * @author	Bernhard Kraft <kraftb@think-open.at>
  * @package	TYPO3
  * @subpackage	tx_kbt3tris
+ *
+ * @hook	early_main		Called at the beginning of the main method
+ * @hook	late_main		Called at the end of the main method
+ * @hook	pre_main_ext		Called before method "main_ext"
+ * @hook	post_main_ext		Called after method "main_ext"
+ * @hook	early_main_ext		Called at the beginning of the "main_ext" method
+ * @hook	pre_initSmart		Called before the smarty object instance gets initialized
+ * @hook	post_initSmarty		Called after the smarty object instance has been initialized
+ * @hook	pre_setVars		Called before some required variables have been set (see code below)
+ * @hook	post_setVars		Called after some required variables have been set (see code below)
+ * @hook	pre_getContent		Called before retrieving all content/rows from the database
+ * @hook	post_getContent		Called after all content/rows have been retrieved from the database
+ * @hook	pre_pagebrowser		Called before the pagebrowser gets rendered
+ * @hook	post_pagebrowser	Called after the pagebrowser has been rendered
+ * @hook	pre_cObjects		Called before global cObjects get rendered
+ * @hook	post_cObjects		Called after global cObjects get rendered
+ * @hook	pre_filters		Called before the defined filters get retrieved
+ * @hook	post_filters		Called after the defined filters have been retrieved
+ * @hook	pre_assignToSmarty	Called before assigning all variables to the smarty instance
+ * @hook	post_assignToSmarty	Called after all variables have been assigned to the smarty instance
+ * @hook	pre_renderTemplate	Called before rendering all content/rows/cObjects/etc. into the smarty (HTML) template
+ * @hook	post_renderTemplate	Called after all content/rows/cObjects/etc. has been rendered into the smarty (HTML) template
+ * @hook	pre_renderUid		Called before rendering/setting the output for rendering a single UID (for XML/RSS, AJAX output, etc.)
+ * @hook	post_renderUid		Called after the output for a single UID (for XML/RSS, AJAX output, etc.) has been rendered
+ * @hook	late_main_ext		Called at the end of the method "main_ext"
+
  */
 class tx_kbdisplay_pi_cached extends tslib_pibase {
 	var $prefixId      = 'tx_kbdisplay_pi_cached';												// Same as class name
@@ -63,6 +89,7 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 	var $pagebrowser = 0;
 
 	function main($content,$conf)	{
+		$this->hook('early_main');
 		$this->selfUid = intval($this->cObj->data['uid']);
 		$this->config = $conf;
 		$this->pi_setPiVarDefaults();
@@ -74,12 +101,15 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 			$this->cObj->cObjGet($this->config['startupCOA.']);
 		}
 
+		$this->hook('pre_main_ext');
 		$output = $this->main_ext($content, $conf);
+		$this->hook('post_main_ext');
 
 		if ($this->config['endCOA.']) {
 			$this->cObj->cObjGet($this->config['endCOA.']);
 		}
 
+		$this->hook('late_main');
 		return $output;
 	}
 
@@ -91,6 +121,9 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 	 * @return	string				The content that is displayed on the website
 	 */
 	function main_ext($content,$conf)	{
+		// Early hook at the beginning of method
+		$this->hook('early_main_ext');
+
 		$this->renderUid = intval($this->piVars['plugin']);
 		if ($this->renderUid && ($this->renderUid != $this->selfUid)) {
 			return '';
@@ -100,86 +133,108 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 
 		$this->startup_cObj = clone($this->cObj);
 
+		// Check if plugin should execute any further or just return
 		$disable = intval($this->cObj->stdWrap($this->config['disable'], $this->config['disable.']));
 		$disableQuery = intval($this->cObj->stdWrap($this->config['disableQuery'], $this->config['disableQuery.']));
 		if ($disable) {
 			return '';
 		}
 
-		$this->smarty = tx_smarty::smarty();
-		$this->smarty->setSmartyVar('caching', $this->cacheSmarty);
-		$this->smarty->setSmartyVar('compile_dir', $this->smarty_compileDir);
-		$this->smarty->setSmartyVar('cache_dir', $this->smarty_cacheDir);
+		// Initialize the smarty object instance
+		$this->hook('pre_initSmarty');
+		$this->initSmarty();
+		$this->hook('post_initSmarty');
 
-		// TODO: Disable for production use
-//		$this->smarty->setSmartyVar('force_compile', true);
-
-		$this->smarty_default = clone($this->smarty);
-
+		// Set up some variables requred for rendering and caching
+		$this->hook('pre_setVars');
 		if ($this->config['setCacheReg'] || $this->config['setCacheReg.']) {
-			$cacheReg = intval($this->cObj->stdWrap($this->config['setCacheReg'], $this->config['setCacheReg.']));
-			if ($cacheReg) {
-				$GLOBALS['TSFE']->page_cache_reg1 = $cacheReg;
+			$this->cacheReg = intval($this->cObj->stdWrap($this->config['setCacheReg'], $this->config['setCacheReg.']));
+			if ($this->cacheReg) {
+				$GLOBALS['TSFE']->page_cache_reg1 = $this->cacheReg;
 			}
 		}
+		$this->flex = &$this->cObj->data['pi_flexform'];
+		$this->itemsPerPage = intval($this->pi_getFFvalue($this->flex, 'field_itemsPerPage', 'sheet_listView', 'lDEF', 'vDEF'));
+		$this->browser['show'] = intval($this->pi_getFFvalue($this->flex, 'field_showPagebrowser', 'sheet_listView', 'lDEF', 'vDEF'));
+		$this->browser['pages']= intval($this->pi_getFFvalue($this->flex, 'field_pagesInBrowser', 'sheet_listView', 'lDEF', 'vDEF'));
+		$this->hook('post_setVars');
 
-		$flex = &$this->cObj->data['pi_flexform'];
-		$this->itemsPerPage = intval($this->pi_getFFvalue($flex, 'field_itemsPerPage', 'sheet_listView', 'lDEF', 'vDEF'));
-		$this->browser['show'] = intval($this->pi_getFFvalue($flex, 'field_showPagebrowser', 'sheet_listView', 'lDEF', 'vDEF'));
-		$this->browser['pages']= intval($this->pi_getFFvalue($flex, 'field_pagesInBrowser', 'sheet_listView', 'lDEF', 'vDEF'));
-
-
-		$ok = $this->renderContent($disableQuery, $flex);
-		if (!$ok) {
+		// Retrieve all content from the database depending on the criteria defined in the flexform
+		$this->hook('pre_getContent');
+		$this->ok = $this->getContent($disableQuery);
+		$this->hook('post_getContent');
+		if (!$this->ok) {
 			return '';
 		}
 
+		// Render the pagebrowser if required
+		$this->hook('pre_pagebrowser');
 		if ($this->itemsPerPage && $this->browser['show']) {
 			$this->renderPagebrowser();
 		}
+		$this->hook('post_pagebrowser');
+
+		// Create row processor instance and render global cObjects
+		$this->hook('pre_cObjects');
 		$this->initObject_rowProcessor();
 		if (is_array($this->useConfig['cObjects.']) && count($this->useConfig['cObjects.'])) {
 			$this->cObjects = $this->rowProcessor->get_cObjects(false, $this->useConfig['cObjects.']);
 		}
+		$this->hook('post_cObjects');
+
+		// Retrieve filter parameters
+		$this->hook('pre_filters');
 		$this->filter['items'] = $this->get_filters();
-		$this->filter['show'] = intval($this->pi_getFFvalue($flex, 'field_showFilters', 'sheet_filters', 'lDEF', 'vDEF'));
+		$this->filter['show'] = intval($this->pi_getFFvalue($this->flex, 'field_showFilters', 'sheet_filters', 'lDEF', 'vDEF'));
+		$this->hook('post_filters');
 
-		$this->smarty->assign('TYPO3_SITE_URL', t3lib_div::getIndpEnv('TYPO3_SITE_URL'));
-		$this->smarty->assign('resultCount', $this->resultCount);
-		$GLOBALS['T3_VARS']['kb_display']['resultCount'][$this->selfUid] = $this->resultCount;
-//print_r($this->resultData);
-		$this->smarty->assign('resultData', $this->resultData);
-		$this->smarty->assign('cObjects', $this->cObjects);
-		$this->smarty->assign('filter', $this->filter);
-		$this->smarty->assign('pagebrowser', $this->pagebrowser);
-		$this->smarty->assign('itemsPerPage', $this->itemsPerPage);
-		$this->smarty->assign('fe_user', $GLOBALS['TSFE']->fe_user);
+		// Assign all required variable to smarty
+		$this->hook('pre_assignToSmarty');
+		$this->assignToSmarty();
+		$this->hook('post_assignToSmarty');
 
-		$templateFile = $this->pi_getFFvalue($flex, 'field_templateFile_'.$this->mode, 'sDEF', 'lDEF', 'vDEF');
-		$templateFile = $this->cObj->stdWrap($templateFile, $this->config['templateFile.']);
-		$origTemplateFile = $templateFile;
-		$templateFile = t3lib_div::getFileAbsFileName($templateFile);
-		$templateDir = dirname($templateFile);
+		// Render the retrieved content into the template
+		$this->hook('pre_renderTemplate');
+		$this->content = $this->renderTemplate();
+		$this->hook('post_renderTemplate');
 
-		if (!(file_exists($templateDir) && is_dir($templateDir) && file_exists($templateFile) && is_file($templateFile))) {
-			return $this->pi_getLL('pi_noTemplateFile', 'No template file configured !');
-		}
-		$this->smarty->setSmartyVar('template_dir', $templateDir);
-		$content = $this->smarty->display($templateFile, '', md5($templateDir));
-
+		// If only a single uid should get rendered
 		if ($this->renderUid && ($this->renderUid == $this->selfUid)) {
-			$output = $GLOBALS['TSFE']->convOutputCharset($content);
-			$GLOBALS['TSFE']->content = $output;
+			$this->hook('pre_renderUid');
+			$this->output = $GLOBALS['TSFE']->convOutputCharset($this->content);
+			$GLOBALS['TSFE']->content = $this->output;
 			$GLOBALS['TSFE']->realPageCacheContent();
 			header('Content-Type: text/html; charset='.$GLOBALS['TSFE']->metaCharset);
-			echo $content;
+			$this->hook('post_renderUid');
+			echo $this->content;
 			exit();
 		}
 		
 		if (!$this->config['dontWrapInBaseClass']) {
-			$content = $this->pi_wrapInBaseClass($content);
+			$this->content = $this->pi_wrapInBaseClass($this->content);
 		}
-		return $content;
+		$this->hook('late_main_ext');
+		return $this->content;
+	}
+
+	public function hook($name) {
+		if (is_array($hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['hooks'][$name])) {
+			foreach ($hooks as $hookKey => $hookConfig) {
+				$params = array(
+					'hook' => $name,
+					'key' => $hookKey,
+					'config' => $hookConfig,
+				);
+				if ($hookConfig['object'] && ($method = $hookConfig['method'])) {
+					$object = &t3lib_div::getUserObj($hookConfig['object']);
+					if (is_object($object) && method_exists($object, $method)) {
+						$object->$method($params, $this);
+					}
+				} elseif ($hookConfig['userFunc']) {
+					t3lib_div::callUserFunction($hookConfig['userFunc'], $params, $this);
+				}
+			}
+		}
 	}
 
 	/**
@@ -190,6 +245,21 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 	public function get_filters() {
 		$filters = $this->queryController->get_filterOptions();
 		return $filters;
+	}
+
+	/**
+	 * Initializes the smarty object instance
+	 *
+	 * @return	void
+	 */
+	public function initSmarty() {
+		$this->smarty = tx_smarty::smarty();
+		$this->smarty->setSmartyVar('caching', $this->cacheSmarty);
+		$this->smarty->setSmartyVar('compile_dir', $this->smarty_compileDir);
+		$this->smarty->setSmartyVar('cache_dir', $this->smarty_cacheDir);
+		// TODO: Disable for production use
+		// $this->smarty->setSmartyVar('force_compile', true);
+		$this->smarty_default = clone($this->smarty);
 	}
 
 	/**
@@ -208,18 +278,18 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 	 *
 	 * @return	boolean		If content has been rendered and should get sent to output this value is true.
 	 */
-	function renderContent($disableQuery, $flex) {
+	function getContent($disableQuery) {
 		$this->resultData = array();
 		// Load parameters submitted via GET or POST
 		$this->loadParams();			// ********
 
 		if ($this->showUid) {
-			$disable = intval($this->pi_getFFvalue($flex, 'field_disableSingleView', 'sDEF', 'lDEF', 'vDEF'));
+			$disable = intval($this->pi_getFFvalue($this->flex, 'field_disableSingleView', 'sDEF', 'lDEF', 'vDEF'));
 			if ($disable) {
 				return false;
 			}
 		} else {
-			$disable = intval($this->pi_getFFvalue($flex, 'field_disableListView', 'sheet_listView', 'lDEF', 'vDEF'));
+			$disable = intval($this->pi_getFFvalue($this->flex, 'field_disableListView', 'sheet_listView', 'lDEF', 'vDEF'));
 			if ($disable) {
 				return false;
 			}
@@ -268,6 +338,42 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 			$this->resultCount = intval($resultRow['cnt']);
 		}
 		return true;
+	}
+
+	/**
+	 * Renders the retrieved content into the smarty template
+	 *
+	 * @return	string		Rendered smarty template
+	 */
+	public function renderTemplate() {
+		$templateFile = $this->pi_getFFvalue($this->flex, 'field_templateFile_'.$this->mode, 'sDEF', 'lDEF', 'vDEF');
+		$templateFile = $this->cObj->stdWrap($templateFile, $this->config['templateFile.']);
+		$origTemplateFile = $templateFile;
+		$templateFile = t3lib_div::getFileAbsFileName($templateFile);
+		$templateDir = dirname($templateFile);
+
+		if (!(file_exists($templateDir) && is_dir($templateDir) && file_exists($templateFile) && is_file($templateFile))) {
+			return $this->pi_getLL('pi_noTemplateFile', 'No template file configured !');
+		}
+		$this->smarty->setSmartyVar('template_dir', $templateDir);
+		return $this->smarty->display($templateFile, '', md5($templateDir));
+	}
+
+	/**
+	 * Assigns all necessary variables to the smarty object instance
+	 *
+	 * @return	void
+	 */
+	public function assignToSmarty() {
+		$this->smarty->assign('TYPO3_SITE_URL', t3lib_div::getIndpEnv('TYPO3_SITE_URL'));
+		$this->smarty->assign('resultCount', $this->resultCount);
+		$GLOBALS['T3_VARS']['kb_display']['resultCount'][$this->selfUid] = $this->resultCount;
+		$this->smarty->assign('resultData', $this->resultData);
+		$this->smarty->assign('cObjects', $this->cObjects);
+		$this->smarty->assign('filter', $this->filter);
+		$this->smarty->assign('pagebrowser', $this->pagebrowser);
+		$this->smarty->assign('itemsPerPage', $this->itemsPerPage);
+		$this->smarty->assign('fe_user', $GLOBALS['TSFE']->fe_user);
 	}
 
 	/**

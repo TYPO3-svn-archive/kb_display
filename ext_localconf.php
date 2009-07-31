@@ -9,6 +9,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_befunc.php']['getFl
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['stdWrap']['kb_display_stdWrap'] = 'EXT:kb_display/hooks/class.tx_kbdisplay_stdWrap.php:&tx_kbdisplay_stdWrap';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['getData']['kb_display_getData'] = 'EXT:kb_display/hooks/class.tx_kbdisplay_getData.php:&tx_kbdisplay_getData';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['cObjTypeAndClass'][] = array('SMARTY', 'EXT:kb_display/hooks/class.tx_kbdisplay_smarty.php:tx_kbdisplay_smarty');
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['cObjTypeAndClass'][] = array('EXT_CONTENT', 'EXT:kb_display/hooks/class.tx_kbdisplay_content_ext.php:tx_kbdisplay_content_ext');
 
 
 

@@ -573,7 +573,7 @@ AND
 		DEBUG
 		if ($this->filter) {
 			print_r($this->criterias);
-			exit();
+//			exit();
 		}
 */
 		$this->queryGenerator->set_criteria($this->criterias, $connector);
