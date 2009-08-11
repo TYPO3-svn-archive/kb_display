@@ -39,15 +39,16 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 		'default' => -1,
 	);
 
-	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, $row, $table, $fieldName) {
-		if ($conf) {
+	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, $row, $table, $fieldName, $level = 0) {
+		if ($level < 2) {
+//		if ($conf) {
 			$this->currentRecursion = $this->maxRecursion;
 		}
 		if (is_array($dataStructArray)) {
-			$dataStructArray = $this->replaceIncludes_recursive($dataStructArray);
+			$dataStructArray = $this->replaceIncludes_recursive($dataStructArray, $level);
 		}
 		if ($conf) {
-	    if (is_array($dataStructArray) && is_array($dataStructArray['sheets']['sheet_tables']['ROOT']['el']['list_tables']['el']['item_table']['el']['list_criteria_section']['el']['list_criteria_item']['el'])) {
+			if (is_array($dataStructArray) && is_array($dataStructArray['sheets']['sheet_tables']['ROOT']['el']['list_tables']['el']['item_table']['el']['list_criteria_section']['el']['list_criteria_item']['el'])) {
 				$this->setCriteriaFields($table, $row, $dataStructArray['sheets']['sheet_tables']['ROOT']['el']['list_tables']['el']['item_table']['el']['list_criteria_section']['el']['list_criteria_item']['el']);
 			}
 		}
@@ -178,12 +179,12 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 		}
 	}
 
-	public function replaceIncludes_recursive($array) {
+	public function replaceIncludes_recursive($array, $level) {
 		foreach ($array as $key => $value) {
 			if (is_array($value)) {
-				$array[$key] = $this->replaceIncludes_recursive($value);
+				$array[$key] = $this->replaceIncludes_recursive($value, $level);
 			} else {
-				$array[$key] = $this->replaceIncludes($value, $key);
+				$array[$key] = $this->replaceIncludes($value, $key, $level);
 				if ($array[$key]=='__unset__') {
 					unset($array[$key]);
 				}
@@ -193,7 +194,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 	}
 
 
-	public function replaceIncludes($value, $key) {
+	public function replaceIncludes($value, $key, $level) {
 		if (strpos($value, 'includeXML:')===0) {
 			$fileName = substr($value, strlen('includeXML:'));
 			$file = t3lib_div::getFileAbsFileName($fileName);
@@ -208,7 +209,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 					$data = t3lib_div::getURL($file);
 					$xml = t3lib_div::xml2array($data);
 					if (is_array($xml)) {
-						$this->getFlexFormDS_postProcessDS($xml, false, false, false, false);
+						$this->getFlexFormDS_postProcessDS($xml, false, false, false, false, $level+1);
 						$value = $xml;
 					} else {
 						die('Included XML file "'.$file.'" is not valid XML! Error: "'.$xml.'"');

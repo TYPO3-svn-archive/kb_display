@@ -110,7 +110,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		}
 
 		$mainCriteriaArray = $this->flexData['data']['sheet_criteria']['lDEF']['list_criteria_section']['el'];
-		$mainCriteria = $this->parseSectionElements($mainCriteriaArray);
+		$mainCriteria = $this->parseSectionElements($mainCriteriaArray, 'vDEF', 1);
 
 		$mainFiltersArray = $this->flexData['data']['sheet_filters']['lDEF']['list_filters_section']['el'];
 		$mainFilters = $this->parseSectionElements($mainFiltersArray);

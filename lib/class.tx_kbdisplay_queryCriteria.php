@@ -93,15 +93,33 @@ class tx_kbdisplay_queryCriteria {
 	 *
 	 * @return	integer		The number of criterias
 	 */
-	public function parse_criterias() {
-		if (is_array($this->criterias_flexFormData)) {
-			foreach ($this->criterias_flexFormData as $criteria) {
-				$crit = $this->parse_criteria($criteria);
-				if ($crit) {
-					$this->criterias[] = $crit;
+	public function parse_criterias($overrideCriteria = false) {
+		if ($overrideCriteria) {
+			$parseCriteria = $overrideCriteria;
+			$resultData = array();
+		} else {
+			$parseCriteria = $this->criterias_flexFormData;
+			$resultData = &$this->criterias;
+		}
+		$parseCriteria = $overrideCriteria ? $overrideCriteria : $this->criterias_flexFormData;
+		if (is_array($parseCriteria)) {
+			foreach ($parseCriteria as $criteria) {
+				if ($criteria['field_criteriaConnector'] && $criteria['list_criteria_section']) {
+					$subResult = $this->parse_criterias($criteria['list_criteria_section']);
+					$resultData[] = array(
+						'connector' => $criteria['field_criteriaConnector'],
+						'criterias' => $subResult,
+					);
+				} else {
+					$crit = $this->parse_criteria($criteria);
+					if ($crit) {
+//						$this->criterias[] = $crit;
+						$resultData[] = $crit;
+					}
 				}
 			}
 		}
+		return $resultData;
 	}
 
 	/**
@@ -401,7 +419,11 @@ AND
 		$criteria['fe_user'] = &$GLOBALS['TSFE']->fe_user->user;
 		$criteria['TSFE'] = &$GLOBALS['TSFE'];
 
+//print_r($criteria);
+//echo "$field<br />\n";
+
 		$type = $this->getFieldCompareType($field, $table);
+
 		if ($type===NULL) {
 			return false;
 		}
@@ -522,6 +544,7 @@ AND
 					$type = 'timestamp';
 				break;
 				default:
+
 					die('Field "'.$field.'" is not in TCA or has no default compare-type.');
 				break;
 			}

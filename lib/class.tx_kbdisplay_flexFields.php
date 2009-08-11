@@ -40,7 +40,7 @@ class tx_kbdisplay_flexFields {
 	 * @param	string		The vDEF language key to use
 	 * @return	array		An array containing a cleaned up version of all elements of the FlexForm section
 	 */
-	protected function parseSectionElements($sectionElements, $vDEF = 'vDEF') {
+	protected function parseSectionElements($sectionElements, $vDEF = 'vDEF', $subSections = 0) {
 		$result = array();
 		if (is_array($sectionElements) && count($sectionElements)) {
 			foreach ($sectionElements as $sectionElement) {
@@ -51,6 +51,9 @@ class tx_kbdisplay_flexFields {
 					$result[] = $dataArray;
 				}
 			}
+		}
+		if ($subSections>0) {
+			$result = $this->parseSubSectionElements($result, $subSections-1);
 		}
 		return $result;
 	}
@@ -75,6 +78,28 @@ class tx_kbdisplay_flexFields {
 		return $result;
 	}
 
+	/**
+	 * Scans a parsed FlexForm array for subsections and parses them
+	 *
+	 * @param	array		The FlexForm XML array containing the section elments
+	 * @param	string		The vDEF language key to use
+	 * @return	array		An array containing a cleaned up version of all elements of the FlexForm section
+	 */
+	function parseSubSectionElements($data, $recursiveLevels = 0) {
+		if (is_array($data) && count($data)) {
+			foreach ($data as $key => $value) {
+				if (is_array($value)) {
+					$keys = array_keys($value);
+					$firstKey = array_shift($keys);
+					if ($firstKey==='el') {
+						$subdata = $this->parseSectionElements($value['el'], $recursiveLevels);
+						$data[$key] = $subdata;
+					}
+				}
+			}
+		}
+		return $data;
+	}
 
 }
 

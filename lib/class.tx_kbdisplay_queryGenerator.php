@@ -134,14 +134,27 @@ class tx_kbdisplay_queryGenerator {
 	 * @return	void
 	 */
 	public function set_criteria($criterias, $connector) {
+		$this->wherePartConnector = strtoupper($connector);
 		foreach ($criterias as $criteria) {
 			$idx = count($this->whereParts);
-			$where = '('.trim($criteria['operand1'].' '.$criteria['operator'].' '.$criteria['operand2']).')';
-			$this->wherePartConnector = strtoupper($connector);
-			$this->whereParts[$idx] = array(
-				'criteriaArray' => $criteria,
-				'whereSQL' => $where,
-			);
+			if (strlen($subconnector = $criteria['connector']) && is_array($criteria['criterias'])) {
+				$subResult = array();
+				foreach ($criteria['criterias'] as $subcriteria) {
+					$where = '('.trim($subcriteria['operand1'].' '.$subcriteria['operator'].' '.$subcriteria['operand2']).')';
+					$subResult[] = $where;
+				}
+				$where = '('.implode(' '.$subconnector.' ', $subResult).')';
+				$this->whereParts[$idx] = array(
+					'criteriaArray' => $criteria,
+					'whereSQL' => $where,
+				);
+			} else {
+				$where = '('.trim($criteria['operand1'].' '.$criteria['operator'].' '.$criteria['operand2']).')';
+				$this->whereParts[$idx] = array(
+					'criteriaArray' => $criteria,
+					'whereSQL' => $where,
+				);
+			}
 		}
 	}
 
