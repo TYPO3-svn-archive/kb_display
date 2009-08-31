@@ -39,6 +39,7 @@ class tx_kbdisplay_queryCriteria {
 	private $criterias_flexFormData = array();
 	private $criterias = array();
 	private $criteriaKeys = array();
+	private $criteriaType = 'criterias';
 
 	private $filterVars = array();
 	private $filterValue = array();
@@ -56,13 +57,14 @@ class tx_kbdisplay_queryCriteria {
 	 * @param	object		A pointer to the parent object instance (The FE-plugin)
 	 * @return	void
 	 */
-	public function init(&$parentObj, &$rootObj) {
+	public function init(&$parentObj, &$rootObj, $criteriaType = 'criterias') {
 		$this->parentObj = &$parentObj;
 		$this->rootObj = &$rootObj;
 		$this->queryGenerator = &$parentObj->get_queryGenerator();
 		$this->useConfig = &$this->rootObj->useConfig;
 		$this->cObj = clone($this->rootObj->cObj);
 		$this->prefixId = $this->rootObj->prefixId;
+		$this->criteriaType = $criteriaType;
 		$_SERVER['QUERY_STRING'] = rawurldecode($_SERVER['QUERY_STRING']);
 	}
 
@@ -599,7 +601,7 @@ AND
 //			exit();
 		}
 */
-		$this->queryGenerator->set_criteria($this->criterias, $connector);
+		$this->queryGenerator->set_criteria($this->criterias, $connector, $this->criteriaType);
 	}
 
 	/**

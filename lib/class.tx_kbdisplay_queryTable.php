@@ -107,7 +107,7 @@ class tx_kbdisplay_queryTable {
 		$this->queryGenerator = &$this->get_queryGenerator();
 
 		$this->criteriaObj->init($this, $this->rootObj);
-		$this->filtersObj->init($this, $this->rootObj);
+		$this->filtersObj->init($this, $this->rootObj, 'filters');
 		$this->searchObj->init($this, $this->rootObj);
 
 		$this->orderObj->init($this, $this->rootObj);

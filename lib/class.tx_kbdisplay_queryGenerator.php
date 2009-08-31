@@ -133,10 +133,13 @@ class tx_kbdisplay_queryGenerator {
 	 * @param	string		How the criterias shall get joined (AND/OR)
 	 * @return	void
 	 */
-	public function set_criteria($criterias, $connector) {
-		$this->wherePartConnector = strtoupper($connector);
+	public function set_criteria($criterias, $connector, $type = 'criterias') {
+		$this->wherePartConnector[$type] = strtoupper($connector);
 		foreach ($criterias as $criteria) {
-			$idx = count($this->whereParts);
+			if (!is_array($this->whereParts[$type])) {
+				$this->whereParts[$type] = array();
+			}
+			$idx = count($this->whereParts[$type]);
 			if (strlen($subconnector = $criteria['connector']) && is_array($criteria['criterias'])) {
 				$subResult = array();
 				foreach ($criteria['criterias'] as $subcriteria) {
@@ -144,13 +147,13 @@ class tx_kbdisplay_queryGenerator {
 					$subResult[] = $where;
 				}
 				$where = '('.implode(' '.$subconnector.' ', $subResult).')';
-				$this->whereParts[$idx] = array(
+				$this->whereParts[$type][$idx] = array(
 					'criteriaArray' => $criteria,
 					'whereSQL' => $where,
 				);
 			} else {
 				$where = '('.trim($criteria['operand1'].' '.$criteria['operator'].' '.$criteria['operand2']).')';
-				$this->whereParts[$idx] = array(
+				$this->whereParts[$type][$idx] = array(
 					'criteriaArray' => $criteria,
 					'whereSQL' => $where,
 				);
@@ -296,11 +299,17 @@ class tx_kbdisplay_queryGenerator {
 	private function prepare_where() {
 		$parts = array();
 		if (is_array($this->whereParts) && count($this->whereParts)) {
-			foreach ($this->whereParts as $wherePart) {
-				$parts[] = $wherePart['whereSQL'];
+			foreach ($this->whereParts as $whereType => $whereParts) {
+				if (is_array($whereParts) && count($whereParts)) {
+					$statements = array();
+					foreach ($whereParts as $wherePart) {
+						$statements[] = $wherePart['whereSQL'];
+					}
+					$parts[] = implode(' '.$this->wherePartConnector[$whereType].' ', $statements);
+				}
 			}
 		}
-		$this->query['WHERE'] = implode(' '.$this->wherePartConnector.' ', $parts);
+		$this->query['WHERE'] = implode(' AND ', $parts);
 	}
 
 	/**
