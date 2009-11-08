@@ -42,6 +42,19 @@ class tx_kbdisplay_getData implements tslib_content_getDataHook {
 		$key = trim($parts[1]);
 		if ((string)$key!='') {
 			switch(strtolower(trim($parts[0]))) {
+				case 'delim':
+				case 'delimiter':
+					switch(strtolower(trim($parts[1]))) {
+						case 'l':
+						case 'left':
+							$returnValue = '{';
+						break;
+						case 'r':
+						case 'right':
+							$returnValue = '}';
+						break;
+					}
+				break;
 				case 'literal':
 				case '//literal':
 					$returnValue = '{'.chr(10).$parts[1].chr(10).'}';

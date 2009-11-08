@@ -1,0 +1,6 @@
+2009-11-08  Bernhard Kraft  <kraftb@think-open.at>
+
+	* New feature: By adding markers {delimiter:left} / {delimiter:right} or the short form {delim:l} {delim:r} it is
+	  possible to add the characters "{" or "}" to a dataWrap/insertData field
+	* Created this file
+
