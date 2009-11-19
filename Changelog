@@ -1,3 +1,8 @@
+2009-11-19  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Fixed bug #3880: Added "password" and "md5" to be removed from "input" field evaluation. Added compare type for TCE type "radio"
+	* Fixed bug #4319: Added the field "sorting" to possible criteria/sort fields in itemProc class (thanks to Bernhard Stähli <ben@grooves.ch>)
+
 2009-11-08  Bernhard Kraft  <kraftb@think-open.at>
 
 	* New feature: By adding markers {delimiter:left} / {delimiter:right} or the short form {delim:l} {delim:r} it is

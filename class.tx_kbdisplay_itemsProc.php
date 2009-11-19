@@ -98,6 +98,8 @@ class tx_kbdisplay_itemsProc extends tx_kbdisplay_flexFields {
 		foreach ($fields as $idx => $field) {
 			$LL = $GLOBALS['TCA'][$table]['columns'][$field]['label'];
 			if (!$LL) {
+					// TODO #5432: Translate this labels to localized pedants using LLXML
+					// Bugtracker: http://forge.typo3.org/issues/show/5432
 				switch ($field) {
 					case 'uid':
 						$fieldLabel = 'UID';
@@ -115,7 +117,11 @@ class tx_kbdisplay_itemsProc extends tx_kbdisplay_flexFields {
 					case 'tstamp':
 						$fieldLabel = 'Last modification';
 					break;
-						die('Invalid field - couldn\'t find label !');
+					case $GLOBALS['TCA'][$table]['ctrl']['sortby']:
+						$fieldLabel = 'Sorting';
+					break;
+					default:
+						$fieldLabel = '['.$field.']';
 					break;
 				}
 			} else {
@@ -148,6 +154,9 @@ class tx_kbdisplay_itemsProc extends tx_kbdisplay_flexFields {
 		$fields[] = 'deleted';
 		$fields[] = 'crdate';
 		$fields[] = 'tstamp';
+		if (strlen($GLOBALS['TCA'][$table]['ctrl']['sortby']) && !in_array($GLOBALS['TCA'][$table]['ctrl']['sortby'], $fields)) {
+			$fields[] = $GLOBALS['TCA'][$table]['ctrl']['sortby'];
+		}
 		return $fields;
 	}
 

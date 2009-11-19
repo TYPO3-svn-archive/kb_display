@@ -125,9 +125,17 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 					case 'inline':
 						// TODO: Write criteria-value-code for inline fields (database relation like)
 					break;
+					case 'radio':
+						$setConfig = $fieldConfig;
+						unset($setConfig['exclude']);
+						$setConfig['label'] = 'LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__compare_value';
+						$setConfig['displayCond'] = 'FIELD:field_compare_compareField:REQ:false && FIELD:field_compare_usersel:REQ:false && FIELD:field_compare_field,0,-5:IN:'.$field;
+						$fieldCriteriaConfig['field_compare_value_'.$table.'_'.$field]['TCEforms'] = $setConfig;
+					break;
 					case 'input':
 						$eval = t3lib_div::trimExplode(',', $fieldConfig['config']['eval'], 1);
-						$eval = array_diff($eval, array('nospace', 'alphanum', 'alphanum_x', 'lower', 'unique', 'trim', 'required'));
+						$eval = array_diff($eval, array('nospace', 'alphanum', 'alphanum_x', 'lower', 'unique', 'trim', 'required', 'md5', 'password'));
+
 						$eval = implode(',', $eval);
 						switch ($eval) {
 							case 'int':
