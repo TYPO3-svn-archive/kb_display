@@ -73,6 +73,7 @@ class ux_t3lib_TCEforms extends t3lib_TCEforms {
 				$from = intval($from);
 				$length = intval($length);
 				$theFieldValue = $ffValueKey ? $row[$fieldName][$ffValueKey] : $row[$fieldName];
+// echo $theFieldValue."<br >/\n";
 				if ($from || $length) {
 					$theFieldValue = substr($theFieldValue, $from, $length);
 				}

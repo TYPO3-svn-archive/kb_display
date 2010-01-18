@@ -40,6 +40,16 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 	);
 
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, $row, $table, $fieldName, $level = 0) {
+		if ($level === 0) {
+			$checksumData = array($conf, $table, $fieldName);
+			$checksum = md5(serialize($checksumData));
+			$cacheFile = PATH_site.'typo3temp/kb_display/kb_display_DS_cache_'.$checksum.'.php';
+			if (file_exists($cacheFile)) {
+				include($cacheFile);
+				$dataStructArray = $data;
+				return;
+			}
+		}
 		if ($level < 2) {
 //		if ($conf) {
 			$this->currentRecursion = $this->maxRecursion;
@@ -48,16 +58,88 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 			$dataStructArray = $this->replaceIncludes_recursive($dataStructArray, $level);
 		}
 		if ($conf) {
+				// comparing table join criterias
 			if (is_array($dataStructArray) && is_array($dataStructArray['sheets']['sheet_tables']['ROOT']['el']['list_tables']['el']['item_table']['el']['list_criteria_section']['el']['list_criteria_item']['el'])) {
 				$this->setCriteriaFields($table, $row, $dataStructArray['sheets']['sheet_tables']['ROOT']['el']['list_tables']['el']['item_table']['el']['list_criteria_section']['el']['list_criteria_item']['el']);
 			}
+			if (is_array($dataStructArray) && is_array($dataStructArray['sheets']['sheet_tables']['ROOT']['el']['list_tables']['el']['item_table']['el']['list_criteria_section']['el']['list_subcriteria']['el']['list_criteria_section']['el']['list_criteria_item']['el'])) {
+				$this->setCriteriaFields($table, $row, $dataStructArray['sheets']['sheet_tables']['ROOT']['el']['list_tables']['el']['item_table']['el']['list_criteria_section']['el']['list_subcriteria']['el']['list_criteria_section']['el']['list_criteria_item']['el']);
+			}
+
+				// comparing "where" criterias
+			if (is_array($dataStructArray) && is_array($dataStructArray['sheets']['sheet_criteria']['ROOT']['el']['list_criteria_section']['el']['list_criteria_item']['el'])) {
+				$this->setCriteriaFields($table, $row, $dataStructArray['sheets']['sheet_criteria']['ROOT']['el']['list_criteria_section']['el']['list_criteria_item']['el']);
+			}
+			if (is_array($dataStructArray) && is_array($dataStructArray['sheets']['sheet_criteria']['ROOT']['el']['list_criteria_section']['el']['list_subcriteria']['el']['list_criteria_section']['el']['list_criteria_item']['el'])) {
+				$this->setCriteriaFields($table, $row, $dataStructArray['sheets']['sheet_criteria']['ROOT']['el']['list_criteria_section']['el']['list_subcriteria']['el']['list_criteria_section']['el']['list_criteria_item']['el']);
+			}
+
+				// comparing filter criterias
+			if (is_array($dataStructArray) && is_array($dataStructArray['sheets']['sheet_filters']['ROOT']['el']['list_filters_section']['el']['list_criteria_item']['el'])) {
+				$this->setCriteriaFields($table, $row, $dataStructArray['sheets']['sheet_filters']['ROOT']['el']['list_filters_section']['el']['list_criteria_item']['el']);
+			}
+			if (is_array($dataStructArray) && is_array($dataStructArray['sheets']['sheet_filters']['ROOT']['el']['list_filters_section']['el']['list_subcriteria']['el']['list_criteria_section']['el']['list_criteria_item']['el'])) {
+				$this->setCriteriaFields($table, $row, $dataStructArray['sheets']['sheet_filters']['ROOT']['el']['list_filters_section']['el']['list_subcriteria']['el']['list_criteria_section']['el']['list_criteria_item']['el']);
+			}
 		}
-/*
-		if ($conf) {
-			print_r($dataStructArray);
-			exit();
+		if (($level === 0) && !file_exists($cacheFile)) {
+			if (is_array($dataStructArray)) {
+				$this->writeCacheFile($cacheFile, $dataStructArray);
+			}
 		}
-*/
+	}
+
+	private function writeCacheFile($cacheFile, $currentData) {
+		$cacheData = '<?php'.chr(10);
+		$cacheData .= '$data = Array('.chr(10);
+		$cacheData .= $this->getArrayCode($currentData);
+		$cacheData .= ');';
+		$cacheData .= '?>';
+		t3lib_div::writeFile($cacheFile, $cacheData);
+	}
+
+	private function getArrayCode($currentData, $level = 0) {
+		$code = '';
+		foreach ($currentData as $key => $value) {
+			$code .= str_repeat(chr(9), $level+1);
+			$code .= '\''.$key.'\' => ';
+			switch (gettype($value)) {
+				case 'boolean':
+					if ($value) {
+						$code .= 'true';
+					} else {
+						$code .= 'false';
+					}
+				break;
+				case 'double':
+				case 'integer':
+					$code .= $value;
+				break;
+				break;
+				case 'string':
+					$code .= '\''.addcslashes($value, '\'\\').'\'';
+				break;
+				case 'array':
+					$code .= 'Array('.chr(10);
+					$code .= $this->getArrayCode($value, $level+1);
+					$code .= str_repeat(chr(9), $level+1).')';
+				break;
+				case 'NULL':
+					$code .= 'NULL';
+				break;
+				case 'object':
+					die('Variable type "object" not valid in DS-XML!');
+				break;
+				case 'resource':
+					die('Variable type "resource" not valid in DS-XML!');
+				break;
+				case 'unknown type':
+					die('Invalid variable type in DS-XML!');
+				break;
+			}
+			$code .= ','.chr(10);
+		}
+		return $code;
 	}
 
 	private function setCriteriaFields($table, $row, &$fieldCriteriaConfig) {
@@ -87,7 +169,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 				switch ($fieldConfig['config']['type']) {
 					case 'group':
 						if ($fieldConfig['config']['internal_type']==='file') {
-							$fieldCriteriaConfig['field_compare_type_string']['TCEforms']['displayCond'] .= ','.$field;
+							$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] .= ','.$field;
 							$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] .= ','.$field;
 						} elseif ($fieldConfig['config']['internal_type']==='db') {
 							$setConfig = $fieldConfig;
@@ -119,7 +201,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 						$fieldCriteriaConfig['field_compare_value_bool']['TCEforms']['displayCond'] .= ','.$field;
 					break;
 					case 'text':
-						$fieldCriteriaConfig['field_compare_type_string']['TCEforms']['displayCond'] .= ','.$field;
+						$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] .= ','.$field;
 						$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] .= ','.$field;
 					break;
 					case 'inline':
@@ -143,9 +225,9 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 								$fieldCriteriaConfig['field_compare_value_int']['TCEforms']['displayCond'] .= ','.$field;
 							break;
 							case '':
-								$fieldCriteriaConfig['field_compare_type_string']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] .= ','.$field;
 								$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] .= ','.$field;
-//echo								$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond']."<br />\n";
+//								$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond']."<br />\n";
 							break;
 							case 'time':
 								$fieldCriteriaConfig['field_compare_type_time']['TCEforms']['displayCond'] .= ','.$field;
@@ -184,6 +266,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 					break;
 				}
 			}
+// exit();
 		}
 	}
 

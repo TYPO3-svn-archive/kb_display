@@ -459,6 +459,7 @@ AND
 		} else {
 			$whereXML = $smarty->display($type.'/compareType.tpl', '', md5($templateDir));
 		}
+echo $whereXML;
 		$whereData = t3lib_div::xml2array($whereXML);
 
 		if (!is_array($whereData)) {

@@ -10,8 +10,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['stdW
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['getData']['kb_display_getData'] = 'EXT:kb_display/hooks/class.tx_kbdisplay_getData.php:&tx_kbdisplay_getData';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['cObjTypeAndClass'][] = array('SMARTY', 'EXT:kb_display/hooks/class.tx_kbdisplay_smarty.php:tx_kbdisplay_smarty');
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['cObjTypeAndClass'][] = array('EXT_CONTENT', 'EXT:kb_display/hooks/class.tx_kbdisplay_content_ext.php:tx_kbdisplay_content_ext');
-
-
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc']['kb_display'] = 'EXT:kb_display/hooks/class.tx_kbdisplay_t3libtcemain.php:&tx_kbdisplay_t3libtcemain->clearCaches';
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_div.php']['cHashParamsHook']['kb_display_cHash'] = 'EXT:kb_display/hooks/class.tx_kbdisplay_t3libdiv.php:&tx_kbdisplay_t3libdiv->cHashParams';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['checkAlternativeIdMethods-PostProc']['kb_display_cHash'] = 'EXT:kb_display/hooks/class.tx_kbdisplay_realurl.php:&tx_kbdisplay_realurl->override_cHash';

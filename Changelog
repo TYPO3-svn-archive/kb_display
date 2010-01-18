@@ -1,3 +1,10 @@
+2010-01-18  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Added code to automaticall add current filter values to pagebrowser links
+	* Fixed a bug: The Frontend-Plugin DS only had "compare" fields set for the join-criterias of the tables-sheet
+	* Added hook for clearing Frontend-Plugin DS cache
+	* Implemented caching for the Frontend-Plugin DS
+
 2009-11-19  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Fixed bug #3880: Added "password" and "md5" to be removed from "input" field evaluation. Added compare type for TCE type "radio"

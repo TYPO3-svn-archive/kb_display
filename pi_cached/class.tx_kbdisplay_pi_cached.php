@@ -502,6 +502,11 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 					'useCacheHash' => 1,
 				),
 			);
+			if (is_array($this->piVars['filter']) && !$this->config['listView.']['pageBrowser.']['resetCategory']) {
+				foreach ($this->piVars['filter'] as $key => $value) {
+					$linkConfig['typolink.']['additionalParams'] .= '&'.$this->prefixId.'[filter]['.$key.']='.rawurlencode($value);
+				}
+			}
 		}
 		$link = $this->cObj->stdWrap($page, $linkConfig);
 		return array(
