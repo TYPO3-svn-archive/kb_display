@@ -29,6 +29,8 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryGenerator.php');
 require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryFetcher.php');
 require_once(PATH_kb_display.'lib/class.tx_kbdisplay_rowProcessor.php');
 
+require_once(PATH_kb_display.'hooks/smarty_plugins/modifier.mysql_escape.php');
+require_once(PATH_kb_display.'hooks/smarty_plugins/modifier.mysql_escapelike.php');
 
 
 /**
@@ -257,6 +259,8 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 		$this->smarty->setSmartyVar('caching', $this->cacheSmarty);
 		$this->smarty->setSmartyVar('compile_dir', $this->smarty_compileDir);
 		$this->smarty->setSmartyVar('cache_dir', $this->smarty_cacheDir);
+		$this->smarty->register_modifier("mysql_escape","smarty_modifier_mysql_escape");
+		$this->smarty->register_modifier("mysql_escapelike","smarty_modifier_mysql_escapelike");
 		// TODO: Disable for production use
 		// $this->smarty->setSmartyVar('force_compile', true);
 		$this->smarty_default = clone($this->smarty);

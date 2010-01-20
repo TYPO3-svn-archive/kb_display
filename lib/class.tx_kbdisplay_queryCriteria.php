@@ -271,6 +271,9 @@ AND
 						$options = $this->getOptions_query($table, $field, $foreignTable, $config['foreign_table_where'], $fieldKey);
 					}
 				break;
+				case 'input':
+					// TODO: Retrieve all distinct values (confiurable length)
+				break;
 				default:
 					die('TODO: getFieldOptions not implemented for field "'.$field.'" with "'.$config['type'].'" TCA type!');
 				break;
@@ -342,9 +345,9 @@ AND
 				'parameter.' => array(
 					'data' => 'TSFE:id',
 				),
+				'useCacheHash' => 1,
 /*
  * TODO: Make configurable
-				'useCacheHash' => 1,
 				'addQueryString' => 1,
 				'addQueryString.' => array(
 					'method' => 'GET,POST',
@@ -464,6 +467,7 @@ AND
 
 		if (!is_array($whereData)) {
 			echo $whereXML."\n<br />\n";
+			print_r($whereXML);
 			die('Invalid criteria where-XML for field "'.$field.'" of type "'.$type.'" !');
 		}
 

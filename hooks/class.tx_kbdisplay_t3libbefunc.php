@@ -41,7 +41,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 
 	public function getFlexFormDS_postProcessDS(&$dataStructArray, $conf, $row, $table, $fieldName, $level = 0) {
 		if ($level === 0) {
-			$checksumData = array($conf, $table, $fieldName);
+			$checksumData = array($conf, $table, $row, $fieldName);
 			$checksum = md5(serialize($checksumData));
 			$cacheFile = PATH_site.'typo3temp/kb_display/kb_display_DS_cache_'.$checksum.'.php';
 			if (file_exists($cacheFile)) {
@@ -230,15 +230,16 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 //								$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond']."<br />\n";
 							break;
 							case 'time':
+									// TODO: field_compare_time
 								$fieldCriteriaConfig['field_compare_type_time']['TCEforms']['displayCond'] .= ','.$field;
 								$fieldCriteriaConfig['field_compare_value_time']['TCEforms']['displayCond'] .= ','.$field;
 							break;
 							case 'datetime':
-								$fieldCriteriaConfig['field_compare_type_date']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_date']['TCEforms']['displayCond'] .= ','.$field;
 								$fieldCriteriaConfig['field_compare_value_datetime']['TCEforms']['displayCond'] .= ','.$field;
 							break;
 							case 'date':
-								$fieldCriteriaConfig['field_compare_type_date']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_date']['TCEforms']['displayCond'] .= ','.$field;
 								$fieldCriteriaConfig['field_compare_value_date']['TCEforms']['displayCond'] .= ','.$field;
 							break;
 							case 'double2':

@@ -312,6 +312,7 @@ class tx_kbdisplay_queryGenerator {
 	 */
 	private function prepare_where() {
 		$parts = array();
+// print_r($this->wherePartConnector);
 		if (is_array($this->whereParts) && count($this->whereParts)) {
 			foreach ($this->whereParts as $whereType => $whereParts) {
 				if (is_array($whereParts) && count($whereParts)) {
@@ -323,15 +324,19 @@ class tx_kbdisplay_queryGenerator {
 				}
 			}
 		}
-		$this->query['WHERE'] = implode(' AND ', $parts);
+		if (count($parts)) {
+			$this->query['WHERE'] = '('.implode(') AND (', $parts).')';
+		}
+//		$this->query['WHERE'] = implode(' AND ', $parts);
 			// Add enable fields to where-part
 		foreach ($this->tables as $table) {
 			if (is_array($ef = $table['enableFields'])) {
 				foreach ($ef as $key => $where) {
-					$this->query['WHERE'] .= ' AND ('.$where.')';
+					$this->query['WHERE'] .= ($this->query['WHERE']?' AND ':'').'('.$where.')';
 				}
 			}
 		}
+//		echo $this->query['WHERE'];
 	}
 
 	/**

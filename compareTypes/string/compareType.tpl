@@ -9,14 +9,72 @@
 		<operand2>'%{$criteria.filterValue}%'</operand2>
 	{/if}
 {elseif $criteria.filter}
-	<operator>=</operator>
-	<operand2>'{$criteria.filterValue}'</operand2>
-{else}
-	{if $criteria.field_compare_negate}
-		<operator>!=</operator>
+	{if "begins_with" == $criteria.field_compare_string}
+		{if $criteria.field_compare_negate}
+			<operator>NOT LIKE</operator>
+		{else}
+			<operator>LIKE</operator>
+		{/if}
+		<operand2>'{$criteria.filterValue}%'</operand2>
+	{elseif "ends_with" == $criteria.field_compare_string}
+		{if $criteria.field_compare_negate}
+			<operator>NOT LIKE</operator>
+		{else}
+			<operator>LIKE</operator>
+		{/if}
+		<operand2>'%{$criteria.filterValue}'</operand2>
+	{elseif "contains" == $criteria.field_compare_string}
+		{if $criteria.field_compare_negate}
+			<operator>NOT LIKE</operator>
+		{else}
+			<operator>LIKE</operator>
+		{/if}
+		<operand2>'%{$criteria.filterValue}%'</operand2>
 	{else}
-		<operator>=</operator>
+		{if $criteria.field_compare_negate}
+			<operator>!=</operator>
+		{else}
+			<operator>=</operator>
+		{/if}
+		<operand2>'{$criteria.filterValue}'</operand2>
 	{/if}
-	<operand2>'{$criteria.field_compare_value_string|escape}'</operand2>
+	
+{else}
+	{if "begins_with" == $criteria.field_compare_string}
+		{if $criteria.field_compare_negate}
+			<operator>NOT LIKE</operator>
+		{else}
+			<operator>LIKE</operator>
+		{/if}
+		<operand2>'{$criteria.field_compare_value_string|mysql_escape|mysql_escapelike}%'</operand2>
+	{elseif "ends_with" == $criteria.field_compare_string}
+		{if $criteria.field_compare_negate}
+			<operator>NOT LIKE</operator>
+		{else}
+			<operator>LIKE</operator>
+		{/if}
+		<operand2>'%{$criteria.field_compare_value_string|mysql_escape|mysql_escapelike}'</operand2>
+	{elseif "contains" == $criteria.field_compare_string}
+		{if $criteria.field_compare_negate}
+			<operator>NOT LIKE</operator>
+		{else}
+			<operator>LIKE</operator>
+		{/if}
+		<operand2>'%{$criteria.field_compare_value_string|mysql_escape|mysql_escapelike}%'</operand2>
+	{elseif "like" == $criteria.field_compare_string}
+		{if $criteria.field_compare_negate}
+			<operator>NOT LIKE</operator>
+		{else}
+			<operator>LIKE</operator>
+		{/if}
+		<operand2>'{$criteria.field_compare_value_string|mysql_escape}'</operand2>
+	{else}
+		{if $criteria.field_compare_negate}
+			<operator>!=</operator>
+		{else}
+			<operator>=</operator>
+		{/if}
+		<operand2>'{$criteria.field_compare_value_string|mysql_escape|mysql_escapelike}'</operand2>
+	{/if}
 {/if}
 </compareXML>
