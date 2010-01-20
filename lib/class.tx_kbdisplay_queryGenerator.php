@@ -127,6 +127,19 @@ class tx_kbdisplay_queryGenerator {
 	}
 
 	/**
+	 * Sets the enable-field where parts for a table
+	 *
+	 * @param		string			The index of the table
+	 * @param		string			The enable fields array
+	 * @return		bool				True if the enable fields were set
+	 */
+	public function set_enableFields($idx, $enableFields) {
+		if ($this->tables[$idx]) {
+			$this->tables[$idx]['enableFields'] = $enableFields;
+		}
+	}
+
+	/**
 	 * Sets passed criteria to one of the interal query building arrays
 	 *
 	 * @param	array		The list of criterias to set
@@ -262,6 +275,7 @@ class tx_kbdisplay_queryGenerator {
 			}
 			$this->query['SELECT'] = implode(', ', $parts);
 		}
+//		print_r($this->query);
 	}
 
 	/**
@@ -310,6 +324,14 @@ class tx_kbdisplay_queryGenerator {
 			}
 		}
 		$this->query['WHERE'] = implode(' AND ', $parts);
+			// Add enable fields to where-part
+		foreach ($this->tables as $table) {
+			if (is_array($ef = $table['enableFields'])) {
+				foreach ($ef as $key => $where) {
+					$this->query['WHERE'] .= ' AND ('.$where.')';
+				}
+			}
+		}
 	}
 
 	/**
@@ -412,6 +434,7 @@ class tx_kbdisplay_queryGenerator {
 //$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
 //print_r($this->query);
 //exit();
+//print_r($this->query);
 		$this->result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($this->query);
 //echo "\n".$GLOBALS['TYPO3_DB']->debug_lastBuiltQuery."\n";
 //exit();

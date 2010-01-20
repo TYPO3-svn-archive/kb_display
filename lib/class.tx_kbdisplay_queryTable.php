@@ -39,6 +39,7 @@ class tx_kbdisplay_queryTable {
 	private $queryGenerator = null;
 	private $criteriaObj = null;
 	private $table_flexFormData = array();
+	private $enableFields = array();
 
 	public $table = null;
 	private $tableIndex = 0;
@@ -83,7 +84,41 @@ class tx_kbdisplay_queryTable {
 	 */
 	public function setup($index, $isSearch = false) {
 		$this->table = $this->table_flexFormData['field_table'];
+		t3lib_div::loadTCA($this->table);
 		$this->tableIndex = $index;
+
+			// Set the "this->enableFields" array to contain proper WHERE strings
+		if (is_array($ctrl = $GLOBALS['TCA'][$this->table]['ctrl'])) {
+			if ($this->table_flexFormData['check_enableDefault']) {
+				if ($ctrl['delete'])	{
+					$this->enableFields['default'] .= ($this->enableFields['default']?' AND ':'').$this->table.'__'.$this->tableIndex.'.'.$ctrl['delete'].'=0';
+				}
+					// TODO: What is the parentObject? Take care of "versioningPreview"
+				if ($ctrl['versioningWS'] && !$this->parentObj->versioningPreview) {
+					$this->enableFields['default'] .= ($this->enableFields['default']?' AND ':'').$this->table.'__'.$this->tableIndex.'.t3ver_state<=0';
+				}
+				if (is_array($ctrl['enablecolumns'])) {
+					if ($ctrl['enablecolumns']['disabled'] && !$this->parentObj->show_hidden) {
+						$this->enableFields['default'] .= ($this->enableFields['default']?' AND ':'').$this->table.'__'.$this->tableIndex.'.'.$ctrl['enablecolumns']['disabled'].'=0';
+					}
+				}
+			}
+			if ($this->table_flexFormData['check_enableTime']) {
+				if ($ctrl['enablecolumns']['starttime']) {
+					$this->enableFields['time'] .= ($this->enableFields['time']?' AND ':'').$this->table.'__'.$this->tableIndex.'.'.$ctrl['enablecolumns']['starttime'].'<='.$GLOBALS['SIM_ACCESS_TIME'];
+				}
+				if ($ctrl['enablecolumns']['endtime']) {
+					$this->enableFields['time'] .= ($this->enableFields['time']?' AND ':'').'('.$this->table.'__'.$this->tableIndex.'.'.$ctrl['enablecolumns']['endtime'].'=0 OR '.$this->table.'__'.$this->tableIndex.'.'.$ctrl['enablecolumns']['endtime'].'>'.$GLOBALS['SIM_ACCESS_TIME'].')';
+				}
+			}
+			if ($this->table_flexFormData['check_enableAccess']) {
+				if ($ctrl['enablecolumns']['fe_group']) {
+					$field = $this->table.'__'.$this->tableIndex.'.'.$ctrl['enablecolumns']['fe_group'];
+					$this->enableFields['access'] = $this->getMultipleGroupsWhereClause($field, $this->table);
+				}
+			}
+		}
+
 		$this->resultName = $this->table_flexFormData['field_resultname'];
 		$this->joinType = $this->table_flexFormData['field_jointype'];
 		$this->isSearch = $isSearch;
@@ -111,6 +146,29 @@ class tx_kbdisplay_queryTable {
 		$this->searchObj->init($this, $this->rootObj);
 
 		$this->orderObj->init($this, $this->rootObj);
+	}
+
+	/**
+	 * Creating where-clause for checking group access to elements in enableFields function
+	 * copied from: t3lib/class.t3lib_page.php
+	 *
+	 * @param	string		Field with group list
+	 * @param	string		Table name
+	 * @return	string		AND sql-clause
+	 * @see enableFields()
+	 */
+	protected function getMultipleGroupsWhereClause($field, $table) {
+		$memberGroups = t3lib_div::intExplode(',',$GLOBALS['TSFE']->gr_list);
+		$orChecks=array();
+		$orChecks[]=$field.'=\'\'';	// If the field is empty, then OK
+		$orChecks[]=$field.' IS NULL';	// If the field is NULL, then OK
+		$orChecks[]=$field.'=\'0\'';	// If the field contsains zero, then OK
+
+		foreach($memberGroups as $value)	{
+			$orChecks[] = $GLOBALS['TYPO3_DB']->listQuery($field, $value, $table);
+		}
+
+		return '('.implode(' OR ',$orChecks).')';
 	}
 
 	/**
@@ -160,6 +218,7 @@ class tx_kbdisplay_queryTable {
 		$this->orderObj->parse_ordering();
 		$this->orderObj->setQuery_order($idx);
 
+		$this->queryGenerator->set_enableFields($idx, $this->enableFields);
 		$this->getFields();
 		$this->queryGenerator->set_fields($this->fields, $idx);
 	}
@@ -179,7 +238,6 @@ class tx_kbdisplay_queryTable {
 	 * @return	void
 	 */
 	private function getFields() {
-		t3lib_div::loadTCA($this->table);
 		$this->fields = array_keys($GLOBALS['TCA'][$this->table]['columns']);
 		$this->fields[] = 'uid';
 		$this->fields[] = 'pid';

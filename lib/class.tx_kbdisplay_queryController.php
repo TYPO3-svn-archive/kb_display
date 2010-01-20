@@ -100,6 +100,9 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		$this->extraTablesDef = $this->parseSectionElements($additionalTables);
 
 		$mainTable = $this->parentObj->pi_getFFvalue($this->flexData, 'field_table', 'sDEF');
+		$checkEnableDefault = intval($this->parentObj->pi_getFFvalue($this->flexData, 'field_checkEnableDefault', 'sDEF'));
+		$checkEnableTime = intval($this->parentObj->pi_getFFvalue($this->flexData, 'field_checkEnableTime', 'sDEF'));
+		$checkEnableAccess = intval($this->parentObj->pi_getFFvalue($this->flexData, 'field_checkEnableAccess', 'sDEF'));
 		$criteriaConnector = $this->parentObj->pi_getFFvalue($this->flexData, 'field_criteriaConnector', 'sheet_criteria');
 		$filtersConnector = $this->parentObj->pi_getFFvalue($this->flexData, 'field_filtersConnector', 'sheet_filters');
 		$searchFields = $this->parentObj->pi_getFFvalue($this->flexData, 'field_search_fields', 'sheet_search');
@@ -137,6 +140,9 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		$this->mainTablesDef = array(
 			'field_table' => $mainTable,
 			'field_jointype' => 'main',
+			'check_enableDefault' => $checkEnableDefault,
+			'check_enableTime' => $checkEnableTime,
+			'check_enableAccess' => $checkEnableAccess,
 			'field_criteriaConnector' => $criteriaConnector,
 			'field_filtersConnector' => $filtersConnector,
 			'list_criteria_section' => $mainCriteria,

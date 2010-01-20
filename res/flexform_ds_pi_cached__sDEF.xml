@@ -96,6 +96,33 @@
 					</config>
 				</TCEforms>
 			</field_disableSingleView>
+			<field_checkEnableDefault>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_checkEnableDefault</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+			</field_checkEnableDefault>
+			<field_checkEnableTime>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_checkEnableTime</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+			</field_checkEnableTime>
+			<field_checkEnableAccess>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:kb_display/locallang.xml:pi_cached_sDEF_checkEnableAccess</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+			</field_checkEnableAccess>
 		</el>
 	</ROOT>
 </T3DataStructure>

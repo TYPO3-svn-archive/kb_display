@@ -1,3 +1,7 @@
+2010-01-20  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Added checkboxes which allow to have the extension handle enableFields (like "hidden", "starttime", "endtime", and "fe_group")
+
 2010-01-18  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Added code to automaticall add current filter values to pagebrowser links
