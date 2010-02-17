@@ -241,9 +241,15 @@ class tx_kbdisplay_queryTable {
 		$this->fields = array_keys($GLOBALS['TCA'][$this->table]['columns']);
 		$this->fields[] = 'uid';
 		$this->fields[] = 'pid';
-		$this->fields[] = 'deleted';
-		$this->fields[] = 'crdate';
-		$this->fields[] = 'tstamp';
+		if ($delete = $GLOBALS['TCA'][$this->table]['ctrl']['delete']) {
+			$this->fields[] = $delete;
+		}
+		if ($crdate = $GLOBALS['TCA'][$this->table]['ctrl']['crdate']) {
+			$this->fields[] = $crdate;
+		}
+		if ($tstamp = $GLOBALS['TCA'][$this->table]['ctrl']['tstamp']) {
+			$this->fields[] = $tstamp;
+		}
 	}
 
 	/**

@@ -1,3 +1,8 @@
+2010-02-17  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Fixed adding of table specific fields like "crdate", "tstamp" and "deleted" to query
+	* Set the currently processed field value to cObj->currentVal
+
 2010-01-20  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Improved the "string" compareType xml

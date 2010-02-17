@@ -343,6 +343,7 @@ class tx_kbdisplay_rowProcessor {
 			if ($config['suffix']) {
 				$suffix = $config['suffix'];
 			}
+			$this->row_cObj->setCurrentVal($value);
 			return array(false, $value, $this->row_cObj->stdWrap($value, $config), $suffix);
 		} else {
 			return array(false, $value, '', $suffix);
