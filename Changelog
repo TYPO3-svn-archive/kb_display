@@ -2,6 +2,7 @@
 
 	* Added a checkbox to show hidden elements
 	* Fixed the TCA/Flex configuration for "select" elements (the criterias/filters should not use MM tables)
+	* Created a way to preselect a value for filter elements
 
 2010-02-17  Bernhard Kraft  <kraftb@think-open.at>
 

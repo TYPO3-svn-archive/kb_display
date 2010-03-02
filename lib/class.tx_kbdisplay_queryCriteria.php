@@ -177,7 +177,17 @@ AND
 		$field = $filter['field_compare_field'];
 		if ($value = $this->filterVars[$field]) {
 			$this->filterValue[$field] = $value;
+                } else {
+			foreach ($filter as $key => $value) {
+				if (strpos($key, 'field_compare_value_') === 0) {
+					if ($value) {
+						$this->filterValue[$field] = $value;
+						$this->filterVars[$field] = $value;
+					}
+				}
+			}
 		}
+
 	}
 
 	private function set_searchCriteria($searchWord) {
