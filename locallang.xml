@@ -22,6 +22,7 @@
 			<label index="pi_cached_sDEF_pages_recursive_INF">Infinite</label>
 			<label index="pi_cached_sDEF_disableSingleView">Disable single-view</label>
 			<label index="pi_cached_sDEF_checkEnableDefault">Check enable fields</label>
+			<label index="pi_cached_sDEF_showHidden">Show hidden</label>
 			<label index="pi_cached_sDEF_checkEnableTime">Check start/stop times</label>
 			<label index="pi_cached_sDEF_checkEnableAccess">Check access groups</label>
 

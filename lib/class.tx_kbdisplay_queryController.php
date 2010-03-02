@@ -101,6 +101,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 
 		$mainTable = $this->parentObj->pi_getFFvalue($this->flexData, 'field_table', 'sDEF');
 		$checkEnableDefault = intval($this->parentObj->pi_getFFvalue($this->flexData, 'field_checkEnableDefault', 'sDEF'));
+		$this->show_hidden = intval($this->parentObj->pi_getFFvalue($this->flexData, 'field_showHidden', 'sDEF'));
 		$checkEnableTime = intval($this->parentObj->pi_getFFvalue($this->flexData, 'field_checkEnableTime', 'sDEF'));
 		$checkEnableAccess = intval($this->parentObj->pi_getFFvalue($this->flexData, 'field_checkEnableAccess', 'sDEF'));
 		$criteriaConnector = $this->parentObj->pi_getFFvalue($this->flexData, 'field_criteriaConnector', 'sheet_criteria');

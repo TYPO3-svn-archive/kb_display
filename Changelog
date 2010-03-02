@@ -1,3 +1,8 @@
+2010-03-02  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Added a checkbox to show hidden elements
+	* Fixed the TCA/Flex configuration for "select" elements (the criterias/filters should not use MM tables)
+
 2010-02-17  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Fixed adding of table specific fields like "crdate", "tstamp" and "deleted" to query

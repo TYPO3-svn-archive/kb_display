@@ -195,6 +195,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 						$setConfig['config']['maxitems'] = 40;
 						$setConfig['config']['size'] = 10;
 						$setConfig['config']['autoSizeMax'] = 20;
+						unset($setConfig['config']['MM']);
 						$fieldCriteriaConfig['field_compare_value_'.$table.'_'.$field]['TCEforms'] = $setConfig;
 					break;
 					case 'check':
