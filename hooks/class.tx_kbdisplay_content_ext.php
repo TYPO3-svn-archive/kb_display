@@ -70,10 +70,10 @@ class tx_kbdisplay_content_ext {
 						}
 
 						if (is_array($row)) { // Might be unset in the sys_language_contentOL
-							if (!$GLOBALS['TSFE']->recordRegister[$conf['table'].':'.$row['uid']]) {
+							if (!$GLOBALS['TSFE']->recordRegister[$conf['table'].':'.$row['uid'].':'.md5(serialize($conf))]) {
 								$parentObj->currentRecordNumber++;
 								$cObj->parentRecordNumber = $parentObj->currentRecordNumber;
-								$GLOBALS['TSFE']->currentRecord = $conf['table'].':'.$row['uid'];
+								$GLOBALS['TSFE']->currentRecord = $conf['table'].':'.$row['uid'].':'.md5(serialize($conf));
 								$parentObj->lastChanged($row['tstamp']);
 								$cObj->start($row,$conf['table']);
 								$tmpValue = $cObj->cObjGetSingle($renderObjName, $renderObjConf, $renderObjKey);
@@ -247,6 +247,8 @@ class tx_kbdisplay_content_ext {
 		} else {
 			$query.=$this->parentObj->enableFields($table);
 		}
+			// We also allow sysfolders!
+		$query = str_replace(' AND pages.doktype<200', '', $query);
 
 			// MAKE WHERE:
 		if ($query)	{

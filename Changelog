@@ -1,3 +1,13 @@
+2010-04-02  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Now a parameter can get passed to hook calls
+	* Implemented configurable language overlay for retrieved data rows
+	* Allowed to use "boolean" compare type as filter
+	* Allowed to have simple select and checkbox fields being used as filter fields
+	* Fixed handling of non MM tables in filters
+	* Added some hook calls to method retrieving filter options
+	* Fixed CONTENT_EXT cObject to allow recursive retrieval of an object and allowed to also retrieve sysfolders
+
 2010-03-02  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Added a checkbox to show hidden elements

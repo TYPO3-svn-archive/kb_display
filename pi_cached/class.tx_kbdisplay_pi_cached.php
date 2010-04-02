@@ -219,14 +219,12 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 		return $this->content;
 	}
 
-	public function hook($name) {
+	public function hook($name, $params = array()) {
 		if (is_array($hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['hooks'][$name])) {
 			foreach ($hooks as $hookKey => $hookConfig) {
-				$params = array(
-					'hook' => $name,
-					'key' => $hookKey,
-					'config' => $hookConfig,
-				);
+				$params['hook'] = $name;
+				$params['key'] = $hookKey;
+				$params['config'] = $hookConfig;
 				if ($hookConfig['object'] && ($method = $hookConfig['method'])) {
 					$object = &t3lib_div::getUserObj($hookConfig['object']);
 					if (is_object($object) && method_exists($object, $method)) {

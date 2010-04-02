@@ -7,7 +7,15 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="pi_noTemplateFile">No template file configured !</label>
+			<label index="filter_labelAll">[All entries]</label>
+			<label index="filter_check_yes">Yes</label>
+			<label index="filter_check_no">No</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="pi_noTemplateFile">Keine Template Datei eingestellt!</label>
 			<label index="filter_labelAll">[Alle Einträge]</label>
+			<label index="filter_check_yes">Ja</label>
+			<label index="filter_check_no">Nein</label>
 		</languageKey>
 	</data>
 </T3locallang>

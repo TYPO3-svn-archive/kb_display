@@ -177,17 +177,7 @@ AND
 		$field = $filter['field_compare_field'];
 		if ($value = $this->filterVars[$field]) {
 			$this->filterValue[$field] = $value;
-                } else {
-			foreach ($filter as $key => $value) {
-				if (strpos($key, 'field_compare_value_') === 0) {
-					if ($value) {
-						$this->filterValue[$field] = $value;
-						$this->filterVars[$field] = $value;
-					}
-				}
-			}
 		}
-
 	}
 
 	private function set_searchCriteria($searchWord) {
@@ -226,7 +216,11 @@ AND
 		$tableIdx = intval($tableIdx);
 		$table = $this->parentObj->get_tableName($tableIdx);
 		$options = $this->getFieldOptions($table, $field, $fieldOrig);
-		$label = $GLOBALS['TCA'][$table]['columns'][$field]['label'];
+		if ($this->useConfig['itemList.']['filter.'][$table.'.'][$field.'.'][$tableIdx.'.']['label']) {
+			$label = $this->useConfig['itemList.']['filter.'][$table.'.'][$field.'.'][$tableIdx.'.']['label'];
+		} else {
+			$label = $GLOBALS['TCA'][$table]['columns'][$field]['label'];
+		}
 		$linkAll = $this->getOption_link($table, $field, '', 0, '', $fieldOrig);
 		$this->filterOptions[$field] = array(
 			'name' => $field,
@@ -279,10 +273,15 @@ AND
 				case 'select':
 					if ($foreignTable = $config['foreign_table']) {
 						$options = $this->getOptions_query($table, $field, $foreignTable, $config['foreign_table_where'], $fieldKey);
+					} else {
+						$options = $this->getOptions_items($table, $field, $config['items'], $fieldKey);
 					}
 				break;
 				case 'input':
 					// TODO: Retrieve all distinct values (confiurable length)
+				break;
+				case 'check':
+					$options = $this->getOptions_check($table, $field, $fieldKey);
 				break;
 				default:
 					die('TODO: getFieldOptions not implemented for field "'.$field.'" with "'.$config['type'].'" TCA type!');
@@ -295,15 +294,90 @@ AND
 	}
 
 	/**
+	 * Returns options for a checkbox type field
+	 *
+	 * @param	array		A parsed criteria flexform definition
+	 * @return	array		The filter options for the passed criteria
+	 */
+	private function getOptions_check($table, $field, $fieldKey) {
+		$link_yes = $this->getOption_link($table, $field, '', 'Y', array(), $fieldKey);
+		$link_no = $this->getOption_link($table, $field, '', 'N', array(), $fieldKey);
+		$selected_yes = $this->filterValue[$fieldKey] === 'Y' ? true : false;
+		$selected_no = $this->filterValue[$fieldKey] === 'N' ? true : false;
+		$options = array(
+			array(
+				'value' => 'Y',
+				'label' => $GLOBALS['TSFE']->sL('LLL:EXT:kb_display/pi_cached/locallang.xml:filter_check_yes'),
+				'link' => $link_yes,
+				'selected' => $selected_yes,
+			),
+			array(
+				'value' => 'N',
+				'label' => $GLOBALS['TSFE']->sL('LLL:EXT:kb_display/pi_cached/locallang.xml:filter_check_no'),
+				'link' => $link_no,
+				'selected' => $selected_no,
+			),
+		);
+		return $options;
+	}
+
+	/**
+	 * Returns options for a select box with predefined items
+	 *
+	 * @param	array		A parsed criteria flexform definition
+	 * @return	array		The filter options for the passed criteria
+	 */
+	private function getOptions_items($table, $field, $items, $fieldKey) {
+		$options = array();
+
+		$params = array(
+			'table' => $table,
+			'field' => $field,
+			'items' => $items,
+			'fieldKey' => $fieldKey,
+		);
+
+		foreach ($items as $key => $item) {
+			$link = $this->getOption_link($table, $field, '', $item[1], $item, $fieldKey);
+			$selected = intval($this->filterValue[$fieldKey])==intval($item[1]) ? true : false;
+			$option = array(
+				'value' => $item[1],
+				'label' => $item[0],
+				'link' => $link,
+				'selected' => $selected,
+			);
+
+				// ---- Call hook which allows to alter the options ---------- begin ------------
+			$params['option'] = &$option;
+			$params['item'] = $item;
+			$this->rootObj->hook('queryCriteria__getOptions_items__processRow', $params);
+				// ---- Call hook which allows to alter the options ---------- end --------------
+
+			$options[] = $option;
+		}
+
+			// ---- Call hook which allows to alter the result ---------- begin ------------
+		unset($params['option']);
+		unset($params['item']);
+		$params['options'] = &$options;
+		$this->rootObj->hook('queryCriteria__getOptions_items__alterResult', $params);
+			// ---- Call hook which allows to alter the result ---------- end --------------
+
+		return $options;
+
+	}
+
+	/**
 	 * Parses an flexform criteria into a where-definition array suitable for a query object instance
 	 *
 	 * @param	array		A parsed criteria flexform definition
-	 * @return	array		The where definition for a criteria
+	 * @return	array		The filter options for the passed criteria
 	 */
 	private function getOptions_query($table, $field, $foreignTable, $where, $fieldKey) {
 		$options = array();
 		$wgolParts = $GLOBALS['TYPO3_DB']->splitGroupOrderLimit($where);
 		$enableField = $GLOBALS['TSFE']->sys_page->enableFields($foreignTable);
+
 		$queryParts = array(
 			'SELECT' => '*',
 			'FROM' => $foreignTable,
@@ -312,21 +386,53 @@ AND
 			'ORDERBY' => $wgolParts['ORDERBY'],
 			'LIMIT' => $wgolParts['LIMIT'],
 		);
+			// ---- Call hook which allows to alter the "getOptions" query ---------- begin ------------
+		$params = array(
+			'table' => $table,
+			'field' => $field,
+			'foreignTable' => $foreignTable,
+			'where' => $where,
+			'fieldKey' => $fieldKey,
+			'queryParts' => &$queryParts,
+		);
+		$this->rootObj->hook('queryCriteria__getOptions_query__alterQuery', $params);
+			// ---- Call hook which allows to alter the "getOptions" query --------- end --------------
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
 		if ($res) {
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				if ($foreignTable == 'pages') {
+					$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
+				} else {
+					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay($foreignTable, $row, $GLOBALS['TSFE']->sys_language_content);
+				}
 				$label = $this->getOption_label($table, $field, $foreignTable, $row);
 				$link = $this->getOption_link($table, $field, $foreignTable, $row['uid'], $row, $fieldKey);
 				$selected = intval($this->filterValue[$fieldKey])==intval($row['uid'])?true:false;
 				
-				$options[] = array(
+				$option = array(
 					'value' => $row['uid'],
 					'label' => $label,
 					'link' => $link,
 					'selected' => $selected,
 				);
+
+					// ---- Call hook which allows to alter the options ---------- begin ------------
+				$params['option'] = &$option;
+				$params['row'] = $row;
+				$this->rootObj->hook('queryCriteria__getOptions_query__processRow', $params);
+					// ---- Call hook which allows to alter the options ---------- end --------------
+
+				$options[] = $option;
 			}
 		}
+
+			// ---- Call hook which allows to alter the result ---------- begin ------------
+		unset($params['option']);
+		$params['options'] = &$options;
+		$this->rootObj->hook('queryCriteria__getOptions_query__alterResult', $params);
+			// ---- Call hook which allows to alter the result ---------- end --------------
+
 		return $options;
 	}
 
@@ -434,9 +540,6 @@ AND
 		$criteria['fe_user'] = &$GLOBALS['TSFE']->fe_user->user;
 		$criteria['TSFE'] = &$GLOBALS['TSFE'];
 
-//print_r($criteria);
-//echo "$field<br />\n";
-
 		$type = $this->getFieldCompareType($field, $table);
 
 		if ($type===NULL) {
@@ -450,16 +553,22 @@ AND
 		$MM = '';
 		$MM_idx = count($this->join_MM);
 		if (is_array($type)) {
-			$MM = $criteria['MM'] = $type['MM'];
-			$type = $type['type'];
-//			$criteria['operand1']['index'] = $tableIdx;
-			$criteria['operand1']['index'] = $MM_idx;
-			$criteria['operand1']['table'] = $MM;
-			$criteria['operand1']['field'] = 'uid_foreign';
-			$criteria['operand1']['current']['table'] = $this->table;
-			$criteria['operand1']['current']['index'] = $this->tableIndex;
-			array_pop($this->criteriaKeys);
-			$this->criteriaKeys[] = $criteria['operand1'];
+			if ($type['MM']) {
+				$MM = $criteria['MM'] = $type['MM'];
+				$type = $type['type'];
+//				$criteria['operand1']['index'] = $tableIdx;
+				$criteria['operand1']['index'] = $MM_idx;
+				$criteria['operand1']['table'] = $MM;
+				$criteria['operand1']['field'] = 'uid_foreign';
+				$criteria['operand1']['current']['table'] = $this->table;
+				$criteria['operand1']['current']['index'] = $this->tableIndex;
+				array_pop($this->criteriaKeys);
+				$this->criteriaKeys[] = $criteria['operand1'];
+			} elseif ($type['CSV']) {
+				$type = $type['type'].'_csv';
+			} else {
+				die('ERROR: Internal problem');
+			}
 		}
 
 		$smarty = $this->rootObj->get_smartyClone();
@@ -532,7 +641,10 @@ AND
 						);
 						return $type;
 					} elseif ($config['maxitems']>1) {
-						die('TODO: getFieldCompareType for comma separated select fields with more than one item.');
+						$type = array(
+							'type' => 'list',
+							'CSV' => true,
+						);
 					} else {
 						$type = 'list';
 					}
@@ -579,7 +691,7 @@ AND
 	 */
 	private function getFieldCompareType_input($field, $table, $config) {
 		$eval = t3lib_div::trimExplode(',', $config['eval'], 1);
-		$eval = array_diff($eval, array('required', 'trim'));
+		$eval = array_diff($eval, array('required', 'trim', 'lower', 'alphanum'));
 		if (!count($eval)) {
 			return 'string';
 		} elseif (in_array('int', $eval)) {

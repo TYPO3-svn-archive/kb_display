@@ -184,9 +184,44 @@ class tx_kbdisplay_rowProcessor {
 		// Initialize cObject with transformed data
 		$this->row_cObj->start($data);
 
+		if (is_array($langOverlay = $this->useConfig['itemList.']['languageOverlay.'])) {
+			$data = $this->languageOverlay($data, $langOverlay);
+		}
+
 		// process fields according to TypoScript-Setup
 		$data = $this->processFields($data);
 
+		return $data;
+	}
+
+	public function languageOverlay($data, $langOverlay) {
+		$sys_language = $langOverlay['overrideLanguage'] ? $langOverlay['overrideLanguage'] : $GLOBALS['TSFE']->sys_language_content;
+		if ($sys_language) {
+			foreach ($langOverlay as $key => $table) {
+				if (!strcmp($key, 'overrideLanguage')) {
+					continue;
+				}
+				if (strpos($key, '.')===false) {
+					$OLmode = is_array($langOverlay[$key.'.']) ? $langOverlay[$key.'.']['OLmode'] : '';
+					if ($data[$key]) {
+						$data[$key] = $this->languageOverlay_table($data[$key], $table, $sys_language, $OLmode);
+					}
+				}
+			}
+		}
+		return $data;
+	}
+
+	function languageOverlay_table($data, $table, $sys_language, $OLmode) {
+		if ($data['__isSubData']) {
+			foreach ($data as $idx => $row) {
+				if (strcmp($idx, '__isSubData')) {
+					$data[$idx] = $GLOBALS['TSFE']->sys_page->getRecordOverlay($table, $row, $sys_language, $OLmode);
+				}
+			}
+		} else {
+			$data = $GLOBALS['TSFE']->sys_page->getRecordOverlay($table, $data, $sys_language, $OLmode);
+		}
 		return $data;
 	}
 
