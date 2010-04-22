@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2009 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -462,20 +462,18 @@ AND
 					'data' => 'TSFE:id',
 				),
 				'useCacheHash' => 1,
-/*
- * TODO: Make configurable
-				'addQueryString' => 1,
-				'addQueryString.' => array(
-					'method' => 'GET,POST',
-				),
-*/
 			);
+			$addQueryString = array();		
+			if ($this->useConfig['itemList.']['filter.'][$table.'.'][$field.'.']['addQueryString'] || ($addQueryString = $this->useConfig['itemList.']['filter.'][$table.'.'][$field.'.']['addQueryString.'])) {
+				$linkConfig['addQueryString'] = 1;
+				$linkConfig['addQueryString.'] = $addQueryString;
+			}
 			if ($value) {
 				$linkConfig['additionalParams'] = '&'.$this->prefixId.'[filter]['.$fieldKey.']='.$value;
-				$linkConfig['addQueryString.']['exclude'] = $this->prefixId.'[page]';
+				$linkConfig['addQueryString.']['exclude'] .= ($linkConfig['addQueryString.']['exclude']?',':'').$this->prefixId.'[page]';
 			} else {
-				$linkConfig['additionalParams'] = '&'.$this->prefixId.'[filter]['.$fieldKey.']=';
-				$linkConfig['addQueryString.']['exclude'] = $this->prefixId.'[page],'.$this->prefixId.'[filter]['.$fieldKey.']';
+//				$linkConfig['additionalParams'] = '&'.$this->prefixId.'[filter]['.$fieldKey.']=';
+				$linkConfig['addQueryString.']['exclude'] .= ($linkConfig['addQueryString.']['exclude']?',':'').$this->prefixId.'[page],'.$this->prefixId.'[filter]['.$fieldKey.']';
 			}
 			$link = $this->cObj->typoLink_URL($linkConfig);
 			return $link;
