@@ -394,8 +394,9 @@ AND
 			'where' => $where,
 			'fieldKey' => $fieldKey,
 			'queryParts' => &$queryParts,
+			'criteriaObject' => &$this,
 		);
-		$this->rootObj->hook('queryCriteria__getOptions_query__alterQuery', $params);
+		$this->rootObj->hook('queryCriteria/getOptions_query/alterQuery', $params);
 			// ---- Call hook which allows to alter the "getOptions" query --------- end --------------
 
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);

@@ -15,6 +15,7 @@
 			<label index="pi_cached_sDEF_templateFile_singleView">Template file: Single view</label>
 			<label index="pi_cached_sDEF_table">Display table</label>
 			<label index="pi_cached_sDEF_pages">Items on page(s)</label>
+			<label index="pi_cached_sDEF_pages_recursive">Recursion</label>
 			<label index="pi_cached_sDEF_pages_recursive_NO">No recursion</label>
 			<label index="pi_cached_sDEF_pages_recursive_1">1 Level</label>
 			<label index="pi_cached_sDEF_pages_recursive_2">2 Levels</label>
