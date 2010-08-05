@@ -1,6 +1,7 @@
 2010-08-05  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Fixed a bug for custom-sorting and custom-compare templates: The fe_user was always set, not checking if there is really a user logged in
+	* Added the first version of the official documentation. This version is only finished by about 30%
 
 2010-08-03  Bernhard Kraft  <kraftb@think-open.at>
 
