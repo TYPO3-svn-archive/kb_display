@@ -109,7 +109,7 @@ class tx_kbdisplay_queryOrder {
 			$order['orderField']['index'] = $tableIdx;
 			$order['orderField']['current']['table'] = $this->table;
 			$order['orderField']['current']['index'] = $this->tableIndex;
-			$order['fe_user'] = $GLOBALS['TSFE']->fe_user->user;
+			$order['fe_user'] = $GLOBALS['TSFE']->loginUser ? $GLOBALS['TSFE']->fe_user->user : false;
 			$order['orderDirection'] = $order['field_sort_direction'];
 			$smarty = $this->rootObj->get_smartyClone();
 			$smarty->assign('order', $order);

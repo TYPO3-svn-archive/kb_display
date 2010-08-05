@@ -1,3 +1,7 @@
+2010-08-05  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Fixed a bug for custom-sorting and custom-compare templates: The fe_user was always set, not checking if there is really a user logged in
+
 2010-08-03  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Renamed a hook in class.tx_kbdisplay_queryCriteria.php and added an additional variable in the $params array

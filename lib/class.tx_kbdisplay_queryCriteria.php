@@ -536,7 +536,7 @@ AND
 		$value = $GLOBALS['TYPO3_DB']->escapeStrForLike($value, $table);
 		$criteria['filterValue'] = $value;
 
-		$criteria['fe_user'] = &$GLOBALS['TSFE']->fe_user->user;
+		$criteria['fe_user'] = $GLOBALS['TSFE']->loginUser ? &$GLOBALS['TSFE']->fe_user->user: false;
 		$criteria['TSFE'] = &$GLOBALS['TSFE'];
 
 		$type = $this->getFieldCompareType($field, $table);
