@@ -72,11 +72,11 @@
 			<label index="pi_cached_criteria__compare_type__number">Number compare type</label>
 
 			<label index="pi_cached_criteria__compare_type__string">String compare type</label>
-			<label index="pi_cached_criteria__compare_type__string__like">SQL-"Like" compare value</label>
-			<label index="pi_cached_criteria__compare_type__string__begins">Begins with compare value</label>
-			<label index="pi_cached_criteria__compare_type__string__ends">Ends with compare value</label>
-			<label index="pi_cached_criteria__compare_type__string__contains">Contains compare value</label>
-			<label index="pi_cached_criteria__compare_type__string__equals">Equals compare value</label>
+			<label index="pi_cached_criteria__compare_type__string__like">SQL-"Like" compared value</label>
+			<label index="pi_cached_criteria__compare_type__string__begins">Begins with compared value</label>
+			<label index="pi_cached_criteria__compare_type__string__ends">Ends with compared value</label>
+			<label index="pi_cached_criteria__compare_type__string__contains">Contains compared value</label>
+			<label index="pi_cached_criteria__compare_type__string__equals">Equals compared value</label>
 
 			<label index="pi_cached_criteria__compare_type__date">Date compare type</label>
 			<label index="pi_cached_criteria__compare_type__date__before">Before compared date</label>
@@ -93,8 +93,8 @@
 			<label index="pi_cached_criteria__compare_type__time__afterNow">After now</label>
 
 			<label index="pi_cached_criteria__compare_type__number">Number compare type</label>
-			<label index="pi_cached_criteria__compare_type__number__smaller">Smaller than compare value</label>
-			<label index="pi_cached_criteria__compare_type__number__bigger">Bigger than compare value</label>
+			<label index="pi_cached_criteria__compare_type__number__smaller">Smaller than compared value</label>
+			<label index="pi_cached_criteria__compare_type__number__bigger">Bigger than compared value</label>
 			<label index="pi_cached_criteria__compare_type__number__equals">Equals compared value</label>
 			<label index="pi_cached_criteria__compare_type__number__in">In list of compared values</label>
 

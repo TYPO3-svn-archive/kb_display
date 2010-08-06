@@ -505,6 +505,19 @@ AND
 	 * @return	array		The where definition for a criteria
 	 */
 	private function parse_criteria($criteria, $noMM = false) {
+
+		/*
+		 * Call hook which allows changing the behaviour of this method
+		 *
+		 * @hook queryCriteria/parse_criteria/methodStart
+		 */
+		$params = array(
+			'criteria' => &$criteria,
+			'noMM' => &$noMM,
+		);
+		$this->rootObj->hook('queryCriteria/parse_criteria/methodStart', $params);
+		// EOF: hook - queryCriteria/parse_criteria/methodStart
+
 		$field = $criteria['field_compare_field'];
 		$value = $this->filterValue[$field];
 		if ($this->filter && !$value) {
@@ -536,7 +549,12 @@ AND
 		$value = $GLOBALS['TYPO3_DB']->escapeStrForLike($value, $table);
 		$criteria['filterValue'] = $value;
 
-		$criteria['fe_user'] = $GLOBALS['TSFE']->loginUser ? &$GLOBALS['TSFE']->fe_user->user: false;
+		if ($GLOBALS['TSFE']->loginUser) {
+			$criteria['fe_user'] = &$GLOBALS['TSFE']->fe_user->user;
+		} else {
+			$criteria['fe_user'] = false;
+		}
+
 		$criteria['TSFE'] = &$GLOBALS['TSFE'];
 
 		$type = $this->getFieldCompareType($field, $table);
@@ -556,6 +574,9 @@ AND
 				$MM = $criteria['MM'] = $type['MM'];
 				$type = $type['type'];
 //				$criteria['operand1']['index'] = $tableIdx;
+				$criteria['operand1']['foreign']['index'] = $criteria['operand1']['index'];
+				$criteria['operand1']['foreign']['table'] = $criteria['operand1']['table'];
+				$criteria['operand1']['foreign']['field'] = $criteria['operand1']['field'];
 				$criteria['operand1']['index'] = $MM_idx;
 				$criteria['operand1']['table'] = $MM;
 				$criteria['operand1']['field'] = 'uid_foreign';
@@ -569,11 +590,30 @@ AND
 				die('ERROR: Internal problem');
 			}
 		}
+		$criteria['type'] = $type;
 
 		$smarty = $this->rootObj->get_smartyClone();
 		$templateDir = PATH_kb_display.'compareTypes/';
 		$smarty->setSmartyVar('template_dir', $templateDir);
 		$smarty->assign('criteria', $criteria);
+
+		/*
+		 * Call hook which allows interfering the compare XML process before rendering
+		 *
+		 * @hook queryCriteria/parse_criteria/preRender
+		 */
+		$params = array(
+			'criteria' => &$criteria,
+			'smarty' => &$smarty,
+			'type' => &$type,
+			'templateDir' => &$templateDir,
+			'MM' => &$MM,
+			'noMM' => &$noMM,
+			'criteriaObject' => &$this,
+		);
+		$this->rootObj->hook('queryCriteria/parse_criteria/preRender', $params);
+		// EOF: hook - queryCriteria/parse_criteria/preRender
+
 		if ($file = t3lib_div::getFileAbsFileName($criteria['field_compare_custom'])) {
 			$smarty->setSmartyVar('template_dir', dirname($file));
 			$whereXML = $smarty->display(basename($file), '', md5($file));
@@ -582,6 +622,24 @@ AND
 		}
 // echo $whereXML;
 		$whereData = t3lib_div::xml2array($whereXML);
+
+		/*
+		 * Call hook which allows interfering the compare XML process after rendering
+		 *
+		 * @hook queryCriteria/parse_criteria/postRender
+		 */
+		$params = array(
+			'criteria' => &$criteria,
+			'smarty' => &$smarty,
+			'type' => &$type,
+			'templateDir' => &$templateDir,
+			'MM' => &$MM,
+			'noMM' => &$noMM,
+			'whereData' => &$whereData,
+			'criteriaObject' => &$this,
+		);
+		$this->rootObj->hook('queryCriteria/parse_criteria/postRender', $params);
+		// EOF: hook - queryCriteria/parse_criteria/postRender
 
 		if (!is_array($whereData)) {
 			echo $whereXML."\n<br />\n";
@@ -606,6 +664,25 @@ AND
 		} elseif ($MM) {
 			die('MM relations disabled for search fields. Add additional table!');
 		}
+
+		/*
+		 * Call hook which allows changing any of the results made for parsing this criteria
+		 *
+		 * @hook queryCriteria/parse_criteria/methodEnd
+		 */
+		$params = array(
+			'criteria' => &$criteria,
+			'smarty' => &$smarty,
+			'type' => &$type,
+			'templateDir' => &$templateDir,
+			'MM' => &$MM,
+			'noMM' => &$noMM,
+			'whereData' => &$whereData,
+			'criteriaObject' => &$this,
+		);
+		$this->rootObj->hook('queryCriteria/parse_criteria/methodEnd', $params);
+		// EOF: hook - queryCriteria/parse_criteria/methodEnd
+
 		return $whereData;
 	}
 
