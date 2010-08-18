@@ -1,8 +1,14 @@
 <compareXML>
 {if $criteria.filter}
 	<operand1>`{$criteria.operand1.table}__{$criteria.operand1.index}`.`{$criteria.operand1.field}`</operand1>
-	<operator>=</operator>
-	<operand2>{$criteria.filterValue|string_format:"%d"}</operand2>
+	{assign var='criteriaKey' value="field_compare_value_`$criteria.operand1.table`_`$criteria.operand1.field`"}
+	{if $criteria.$criteriaKey && !$criteria.filterValue}
+		<operator>IN</operator>
+		<operand2>({$criteria.$criteriaKey})</operand2>
+	{else}
+		<operator>=</operator>
+		<operand2>{$criteria.filterValue|string_format:"%d"}</operand2>
+	{/if}
 {else}
 	{if $criteria.field_compare_compareField}
 		<operand1>`{$criteria.operand1.table}__{$criteria.operand1.index}`.`{$criteria.operand1.field}`</operand1>

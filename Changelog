@@ -1,3 +1,8 @@
+2010-08-18  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Renamed the key of some hooks in "lib/class.tx_kbdisplay_queryCriteria.php" to match a common naming scheme
+	* Added feature: When no user selected filter value is transmitted for a list-type filter item, then use value preselected in BE form
+
 2010-08-06  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Modified some labels in locallang.xml

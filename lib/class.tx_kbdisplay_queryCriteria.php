@@ -350,7 +350,7 @@ AND
 				// ---- Call hook which allows to alter the options ---------- begin ------------
 			$params['option'] = &$option;
 			$params['item'] = $item;
-			$this->rootObj->hook('queryCriteria__getOptions_items__processRow', $params);
+			$this->rootObj->hook('queryCriteria/getOptions_items/processRow', $params);
 				// ---- Call hook which allows to alter the options ---------- end --------------
 
 			$options[] = $option;
@@ -360,7 +360,7 @@ AND
 		unset($params['option']);
 		unset($params['item']);
 		$params['options'] = &$options;
-		$this->rootObj->hook('queryCriteria__getOptions_items__alterResult', $params);
+		$this->rootObj->hook('queryCriteria/getOptions_items/alterResult', $params);
 			// ---- Call hook which allows to alter the result ---------- end --------------
 
 		return $options;
@@ -421,7 +421,7 @@ AND
 					// ---- Call hook which allows to alter the options ---------- begin ------------
 				$params['option'] = &$option;
 				$params['row'] = $row;
-				$this->rootObj->hook('queryCriteria__getOptions_query__processRow', $params);
+				$this->rootObj->hook('queryCriteria/getOptions_query/processRow', $params);
 					// ---- Call hook which allows to alter the options ---------- end --------------
 
 				$options[] = $option;
@@ -431,7 +431,7 @@ AND
 			// ---- Call hook which allows to alter the result ---------- begin ------------
 		unset($params['option']);
 		$params['options'] = &$options;
-		$this->rootObj->hook('queryCriteria__getOptions_query__alterResult', $params);
+		$this->rootObj->hook('queryCriteria/getOptions_query/alterResult', $params);
 			// ---- Call hook which allows to alter the result ---------- end --------------
 
 		return $options;
