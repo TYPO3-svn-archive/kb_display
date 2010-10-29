@@ -103,33 +103,36 @@ class tx_kbdisplay_queryOrder {
 		$tableIdx = intval($tableIdx);
 		$table = $this->parentObj->get_tableName($tableIdx);
 
-		if ($file = t3lib_div::getFileAbsFileName($order['field_sort_custom'])) {
-			$order['orderField']['field'] = $field;
-			$order['orderField']['table'] = $table;
-			$order['orderField']['index'] = $tableIdx;
-			$order['orderField']['current']['table'] = $this->table;
-			$order['orderField']['current']['index'] = $this->tableIndex;
-			$order['fe_user'] = $GLOBALS['TSFE']->loginUser ? $GLOBALS['TSFE']->fe_user->user : false;
-			$order['orderDirection'] = $order['field_sort_direction'];
-			$smarty = $this->rootObj->get_smartyClone();
-			$smarty->assign('order', $order);
-			$smarty->setSmartyVar('template_dir', dirname($file));
-			$orderXML = $smarty->display($file, md5($file));
-			$orderData = t3lib_div::xml2array($orderXML);
-			if (!is_array($orderData)) {
-				die('Invalid order XML for field "'.$field.'"!');
+		$orderData = false;
+		if ($tableIdx === $this->tableIndex) {
+			if ($file = t3lib_div::getFileAbsFileName($order['field_sort_custom'])) {
+				$order['orderField']['field'] = $field;
+				$order['orderField']['table'] = $table;
+				$order['orderField']['index'] = $tableIdx;
+				$order['orderField']['current']['table'] = $this->table;
+				$order['orderField']['current']['index'] = $this->tableIndex;
+				$order['fe_user'] = $GLOBALS['TSFE']->loginUser ? $GLOBALS['TSFE']->fe_user->user : false;
+				$order['orderDirection'] = $order['field_sort_direction'];
+				$smarty = $this->rootObj->get_smartyClone();
+				$smarty->assign('order', $order);
+				$smarty->setSmartyVar('template_dir', dirname($file));
+				$orderXML = $smarty->display($file, md5($file));
+				$orderData = t3lib_div::xml2array($orderXML);
+				if (!is_array($orderData)) {
+					die('Invalid order XML for field "'.$field.'"!');
+				}
+				if (!$orderData['field']) {
+					die('Invalid order XML for field "'.$field.'". Array key "field" missing!');
+				}
+				if (!$orderData['direction']) {
+					die('Invalid order XML for field "'.$field.'". Array key "direction" missing!');
+				}
+			} else {
+				$orderData = array(
+					'field' => '`'.$table.'__'.$tableIdx.'`.`'.$field.'`',
+					'direction' => $order['field_sort_direction'],
+				);
 			}
-			if (!$orderData['field']) {
-				die('Invalid order XML for field "'.$field.'". Array key "field" missing!');
-			}
-			if (!$orderData['direction']) {
-				die('Invalid order XML for field "'.$field.'". Array key "direction" missing!');
-			}
-		} else {
-			$orderData = array(
-				'field' => '`'.$table.'__'.$tableIdx.'`.`'.$field.'`',
-				'direction' => $order['field_sort_direction'],
-			);
 		}
 		return $orderData;
 	}

@@ -120,7 +120,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		$mainFilters = $this->parseSectionElements($mainFiltersArray);
 
 		$mainOrderingArray = $this->flexData['data']['sheet_sorting']['lDEF']['list_sorting_section']['el'];
-		$mainOrdering = $this->parseSectionElements($mainOrderingArray);
+		$this->mainOrdering = $this->parseSectionElements($mainOrderingArray);
 
 		if ($this->rootObj->mode === 'singleView') {
 			if (is_array($this->rootObj->showUids) && (count($this->rootObj->showUids)>1)) {
@@ -138,19 +138,23 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 			}
 		}
 
-		$this->mainTablesDef = array(
-			'field_table' => $mainTable,
-			'field_jointype' => 'main',
+		$this->enableChecks = array(
 			'check_enableDefault' => $checkEnableDefault,
 			'check_enableTime' => $checkEnableTime,
 			'check_enableAccess' => $checkEnableAccess,
+		);
+
+		$this->mainTablesDef = array(
+			'field_table' => $mainTable,
+			'field_jointype' => 'main',
 			'field_criteriaConnector' => $criteriaConnector,
 			'field_filtersConnector' => $filtersConnector,
 			'list_criteria_section' => $mainCriteria,
 			'list_filters_section' => $mainFilters,
-			'list_ordering_section' => $mainOrdering,
+			'list_ordering_section' => $this->mainOrdering,
 			'field_search_fields' => $searchFields,
 		);
+		$this->mainTablesDef = array_merge($this->mainTablesDef, $this->enableChecks);
 	}
 
 	/*
@@ -227,6 +231,8 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		}
 		if ($data) {
 			$idx = $this->initObject_queryTables();
+			$data = array_merge($data, $this->enableChecks);
+			$data['list_ordering_section'] = $this->mainOrdering;
 			$this->tableObjects[$idx]->set_flexData($data);
 			return $idx;
 		} else {

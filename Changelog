@@ -2,7 +2,9 @@
 
 	* Updated manual.sxw
 	* Added logger calls instead of echoing error messages
-	* Minor fixes
+	* Enable/Deleted checks get now used for all tables
+	* Sorting can now also get set for joined/subquery tables
+	* Some other minor fixes
 
 2010-08-18  Bernhard Kraft  <kraftb@think-open.at>
 
