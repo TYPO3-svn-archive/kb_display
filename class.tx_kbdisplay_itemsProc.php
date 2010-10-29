@@ -144,6 +144,7 @@ class tx_kbdisplay_itemsProc extends tx_kbdisplay_flexFields {
 	 * @return	void
 	 */
 	private function getAllFields($table) {
+		$sqlFields = $GLOBALS['TYPO3_DB']->admin_get_fields($table);
 		t3lib_div::loadTCA($table);
 		if (!is_array($GLOBALS['TCA'][$table])) {
 			return array();
@@ -157,6 +158,9 @@ class tx_kbdisplay_itemsProc extends tx_kbdisplay_flexFields {
 		if (strlen($GLOBALS['TCA'][$table]['ctrl']['sortby']) && !in_array($GLOBALS['TCA'][$table]['ctrl']['sortby'], $fields)) {
 			$fields[] = $GLOBALS['TCA'][$table]['ctrl']['sortby'];
 		}
+		$sqlKeys = array_keys($sqlFields);
+		$sqlKeys = array_diff($sqlKeys, $fields);
+		$fields = array_merge($fields, $sqlKeys);
 		return $fields;
 	}
 

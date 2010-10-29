@@ -749,8 +749,9 @@ AND
 					$type = 'timestamp';
 				break;
 				default:
-
-					die('Field "'.$field.'" is not in TCA or has no default compare-type.');
+					$type = 'string';
+					// ToDo: Log this case
+//					die('Field "'.$field.'" is not in TCA or has no default compare-type.');
 				break;
 			}
 		}

@@ -1,3 +1,9 @@
+2010-10-29  Bernhard Kraft  <kraftb@think-open.at>
+
+	* Updated manual.sxw
+	* Added logger calls instead of echoing error messages
+	* Minor fixes
+
 2010-08-18  Bernhard Kraft  <kraftb@think-open.at>
 
 	* Renamed the key of some hooks in "lib/class.tx_kbdisplay_queryCriteria.php" to match a common naming scheme

@@ -252,23 +252,19 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 							case 'required':
 							break;
 							default:
-								print_r(array_keys($fieldCriteriaConfig));
-								print_r($fieldConfig);
-								die('Invalid "eval" configuration "'.$eval.'" for field type "'.$fieldConfig['config']['type'].'" criteria config!');
+								t3lib_div::sysLog('Invalid "eval" configuration "'.$eval.'" for field type "'.$fieldConfig['config']['type'].'" criteria config!', 'kb_display', 3);
 							break;
 						}
 					break;
 					case 'flex':
 					case 'passthrough':
+					case 'user':
 					break;
 					default:
-						print_r(array_keys($fieldCriteriaConfig));
-						print_r($fieldConfig);
-						die('No criteria-config for field type "'.$fieldConfig['config']['type'].'" defined!');
+						t3lib_div::sysLog('No criteria-config for field type "'.$fieldConfig['config']['type'].'" defined!', 'kb_display', 3);
 					break;
 				}
 			}
-// exit();
 		}
 	}
 
