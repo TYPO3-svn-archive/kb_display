@@ -22,6 +22,7 @@ t3lib_extMgm::addPItoST43($_EXTKEY, 'pi_cached/class.tx_kbdisplay_pi_cached.php'
 
 $_EXTCONF = unserialize($_EXTCONF);
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$_EXTKEY]['debugQuery'] = intval($_EXTCONF['debugQuery']);
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$_EXTKEY]['debugFilterQuery'] = intval($_EXTCONF['debugFilterQuery']);
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$_EXTKEY]['debugDynamicFlexforms'] = intval($_EXTCONF['debugDynamicFlexforms']);
 
 ?>

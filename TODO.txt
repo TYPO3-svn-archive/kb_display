@@ -5,4 +5,6 @@
 
 * Find a reasonable guideline when to use "t3lib_div::sysLog" or "t3lib_div::devLog"
 
+* Write documentation for filters (lib/class.tx_kbdisplay_queryCriteria.php) TypoScript options
+
 

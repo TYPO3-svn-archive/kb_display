@@ -4,6 +4,8 @@
 	* Added code from think-open.at SVN repository which introduce the "group by" configuration. Currently only the flexform configuration for the BE interface
 	* Added devlog debugging code from think-open.at SVN repository
 	* Added the "group by" code from the think-open.at SVN repository
+	* Filters now allow to use fields of type "input". There are a lot of configurations options via TypoScript. Look for them as "filter." in "lib/class.tx_kbdisplay_queryCriteria.php" and make documentation
+	* Added "debugFilterQuery" option to "ext_conf_template.txt" extension configuration
 
 2010-10-29  Bernhard Kraft  <kraftb@think-open.at>
 	* Updated manual.sxw

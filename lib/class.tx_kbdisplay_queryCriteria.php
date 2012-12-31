@@ -245,9 +245,10 @@ AND
 	 * This method retrieves all possible options for the passed field.
 	 * This just makes sense for "select" or database relation fields.
 	 *
-	 * @param		string		The table of the field for which to fetch options
-	 * @param		string		The name of the field (TCA) for which to fetch options
-	 * @return	array			All possible data options
+	 * @param string	$table: The table of the field for which to fetch options
+	 * @param string	$field: The name of the field (TCA) for which to fetch options
+	 * @param string	$fieldKey: [TODO]
+	 * @return array	All possible data options
 	 */
 	private function getFieldOptions($table, $field, $fieldKey) {
 		t3lib_div::loadTCA($table);
@@ -279,6 +280,28 @@ AND
 				break;
 				case 'input':
 					// TODO: Retrieve all distinct values (configurable length)
+					$filterConfig = $this->useConfig['itemList.']['filter.'][$table.'.'][$field.'.'];
+					$length = intval($filterConfig['length']);
+
+						// Have sane defaults for every used variable
+					$where = '';
+					$fieldValue = '_option_value';
+					if ($length) {
+						$selectFields = 'DISTINCT(LEFT('.$field.', '.$length.')) AS _option_value';
+					} else {
+						$selectFields = 'DISTINCT('.$field.') AS _option_value';
+					}
+
+						// Set content of "$where" from TypoScript
+					$where = $this->stdWrap($where, $filterConfig, 'where');
+
+						// Set content of "$fieldValue" from TypoScript
+					$fieldValue = $this->stdWrap($fieldValue, $filterConfig, 'fieldValue');
+
+						// Set content of "$selectFields" from TypoScript
+					$selectFields = $this->stdWrap($selectFields, $filterConfig, 'selectFields');
+
+					$options = $this->getOptions_query($table, $field, $table, $where, $fieldKey, $selectFields, $fieldValue);
 				break;
 				case 'check':
 					$options = $this->getOptions_check($table, $field, $fieldKey);
@@ -296,8 +319,10 @@ AND
 	/**
 	 * Returns options for a checkbox type field
 	 *
-	 * @param	array		A parsed criteria flexform definition
-	 * @return	array		The filter options for the passed criteria
+	 * @param string	$table: The table of the field for which to return options
+	 * @param string	$field: The name of the field (TCA) for which to return options
+	 * @param string	$fieldKey: [TODO]
+	 * @return array	The filter options for the passed criteria
 	 */
 	private function getOptions_check($table, $field, $fieldKey) {
 		$link_yes = $this->getOption_link($table, $field, '', 'Y', array(), $fieldKey);
@@ -324,8 +349,10 @@ AND
 	/**
 	 * Returns options for a select box with predefined items
 	 *
-	 * @param	array		A parsed criteria flexform definition
-	 * @return	array		The filter options for the passed criteria
+	 * @param string	$table: The table of the field for which to return options
+	 * @param string	$field: The name of the field (TCA) for which to return options
+	 * @param string	$fieldKey: [TODO]
+	 * @return array	The filter options for the passed criteria
 	 */
 	private function getOptions_items($table, $field, $items, $fieldKey) {
 		$options = array();
@@ -368,18 +395,24 @@ AND
 	}
 
 	/**
-	 * Parses an flexform criteria into a where-definition array suitable for a query object instance
+	 * Returns options for a items from a table
 	 *
-	 * @param	array		A parsed criteria flexform definition
-	 * @return	array		The filter options for the passed criteria
+	 * @param string	$table: The table of the field for which to return options
+	 * @param string	$field: The name of the field (TCA) for which to return options
+	 * @param string	$foreignTable: The name of the foreign table from which to fetch the options
+	 * @param string	$where: An additional where part for the table from which to fetch options
+	 * @param string	$fieldKey: [TODO]
+	 * @return array	The filter options for the passed criteria
 	 */
-	private function getOptions_query($table, $field, $foreignTable, $where, $fieldKey) {
+	private function getOptions_query($table, $field, $foreignTable, $where, $fieldKey, $selectFields = '*', $fieldValue = 'uid') {
 		$options = array();
+		$storagePid = $GLOBALS['TSFE']->getStorageSiterootPids();
+		$where = str_replace('###STORAGE_PID###', intval($storagePid['_STORAGE_PID']), $where);
 		$wgolParts = $GLOBALS['TYPO3_DB']->splitGroupOrderLimit($where);
 		$enableField = $GLOBALS['TSFE']->sys_page->enableFields($foreignTable);
 
 		$queryParts = array(
-			'SELECT' => '*',
+			'SELECT' => $selectFields,
 			'FROM' => $foreignTable,
 			'WHERE' => '1=1 '.$enableField.$wgolParts['WHERE'],
 			'GROUPBY' => $wgolParts['GROUPBY'],
@@ -399,7 +432,22 @@ AND
 		$this->rootObj->hook('queryCriteria/getOptions_query/alterQuery', $params);
 			// ---- Call hook which allows to alter the "getOptions" query --------- end --------------
 
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugFilterQuery']) {
+			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
+			$GLOBALS['TYPO3_DB']->debugOutput = true;
+			t3lib_div::devLog('Prepared filter query', 'kb_display', 0, $queryParts);
+		}
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugFilterQuery']) {
+			if ($result) {
+				t3lib_div::devLog('Filter query executed successfully', 'kb_display', -1, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
+			} else {
+				t3lib_div::devLog('Filter query failed', 'kb_display', 3, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
+			}
+			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = false;
+			$GLOBALS['TYPO3_DB']->debugOutput = false;
+		}
+
 		if ($res) {
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				if ($foreignTable == 'pages') {
@@ -408,11 +456,11 @@ AND
 					$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay($foreignTable, $row, $GLOBALS['TSFE']->sys_language_content);
 				}
 				$label = $this->getOption_label($table, $field, $foreignTable, $row);
-				$link = $this->getOption_link($table, $field, $foreignTable, $row['uid'], $row, $fieldKey);
-				$selected = intval($this->filterValue[$fieldKey])==intval($row['uid'])?true:false;
+				$link = $this->getOption_link($table, $field, $foreignTable, $row[$fieldValue], $row, $fieldKey);
+				$selected = ( $this->filterValue[$fieldKey] === $row[$fieldValue] ) ? true : false;
 				
 				$option = array(
-					'value' => $row['uid'],
+					'value' => $row[$fieldValue],
 					'label' => $label,
 					'link' => $link,
 					'selected' => $selected,
@@ -491,6 +539,8 @@ AND
 	private function getOption_label($table, $field, $foreignTable, $data) {
 		if ($labelField = $this->useConfig['itemList.']['filter.'][$table.'.'][$field.'.']['labelField']) {
 			return $data[$labelField];
+		} elseif ($data['_option_value']) {
+			return $data['_option_value'];
 		} elseif ($labelField = $GLOBALS['TCA'][$foreignTable]['ctrl']['label']) {
 			return $data[$labelField];
 		} else {
@@ -843,6 +893,25 @@ AND
 			'criteriaCompared' => $this->criteriaCompared,
 		);
 		$this->queryGenerator->set_onClause($this->criterias, $connector, $tableIdx, $joinInfo);
+	}
+
+	/**
+	 * Do stdWrap processing in local object context
+	 *
+	 * @param string	$value: The current value to be stdWrapped
+	 * @param array		$config: TypoScript configuration which includes the key/property to be used for wrapping
+	 * @param string	$propertyName: The property in above TypoScript configuration array which should get used for wrapping
+	 * @return string	The passed $value variable with stdWrap properties of $propertyName from within $configuration applied
+	 */
+	private function stdWrap($value, $config, $propertyName) {
+		if ($config[$propertyName]) {
+			$value = $config[$propertyName];
+		}
+		if ($config[$propertyName.'.']) {
+			$local_cObj = clone($this->rootObj->cObj);
+			$value = $local_cObj->stdWrap($value, $config[$propertyName.'.']);
+		}
+		return $value;
 	}
 
 
