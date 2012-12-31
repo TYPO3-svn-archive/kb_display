@@ -25,6 +25,7 @@
 
 require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryCriteria.php');
 require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryOrderBy.php');
+require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryGroupBy.php');
 
 /**
  * Class for handling of each flexform table definition
@@ -38,6 +39,10 @@ class tx_kbdisplay_queryTable {
 	private $rootObj = null;
 	private $queryGenerator = null;
 	private $criteriaObj = null;
+	private $filtersObj = null;
+	private $searchObj = null;
+	private $obj_orderBy = null;
+	private $obj_groupBy = null;
 	private $table_flexFormData = array();
 	private $enableFields = array();
 
@@ -46,7 +51,11 @@ class tx_kbdisplay_queryTable {
 	private $joinType = null;
 	private $criteriaConnector = null;
 	private $criteriaArray = array();
-	private $config_orderBy = array();
+	private $flexData_orderBy = array();
+
+		// All of the above fields in this block contain the commonly parsed flexData.
+		// So probably "flexData_" is a better prefix than "array_", "field_" and even better than some postfix
+	private $flexData_groupBy = array();
 
 	private $filtersConnector = null;
 	private $searchConnector = null;
@@ -65,6 +74,7 @@ class tx_kbdisplay_queryTable {
 		$this->filtersObj = t3lib_div::makeInstance('tx_kbdisplay_queryCriteria');
 		$this->searchObj = t3lib_div::makeInstance('tx_kbdisplay_queryCriteria');
 		$this->obj_orderBy = t3lib_div::makeInstance('tx_kbdisplay_queryOrderBy');
+		$this->obj_groupBy = t3lib_div::makeInstance('tx_kbdisplay_queryGroupBy');
 	}
 
 	/**
@@ -137,7 +147,8 @@ class tx_kbdisplay_queryTable {
 		$this->criteriaArray = $this->table_flexFormData['list_criteria_section'];
 		$this->filtersArray = $this->table_flexFormData['list_filters_section'];
 		$this->searchArray = $this->table_flexFormData['field_search_fields'];
-		$this->config_orderBy = $this->table_flexFormData['list_orderBy_section'];
+		$this->flexData_orderBy = $this->table_flexFormData['list_orderBy_section'];
+		$this->flexData_groupBy = $this->table_flexFormData['field_groupBy_fields'];
 
 		$this->queryGenerator = &$this->get_queryGenerator();
 
@@ -146,6 +157,7 @@ class tx_kbdisplay_queryTable {
 		$this->searchObj->init($this, $this->rootObj);
 
 		$this->obj_orderBy->init($this, $this->rootObj);
+		$this->obj_groupBy->init($this, $this->rootObj);
 	}
 
 	/**
@@ -214,9 +226,14 @@ class tx_kbdisplay_queryTable {
 		}
 
 		$this->obj_orderBy->set_table($this->table);
-		$this->obj_orderBy->set_orderBy($this->config_orderBy);
+		$this->obj_orderBy->set_orderBy($this->flexData_orderBy);
 		$this->obj_orderBy->parse_orderBy();
 		$this->obj_orderBy->setQuery_orderBy($idx);
+
+		$this->obj_groupBy->set_table($this->table);
+		$this->obj_groupBy->set_groupBy($this->flexData_groupBy);
+		$this->obj_groupBy->parse_groupBy();
+		$this->obj_groupBy->setQuery_groupBy($idx);
 
 		$this->queryGenerator->set_enableFields($idx, $this->enableFields);
 		$this->getFields();
@@ -291,7 +308,7 @@ class tx_kbdisplay_queryTable {
 		return $this->tableIndex;
 	}
 
-	/*
+	/**
 	 * This method returns parsed search words
 	 *
 	 *

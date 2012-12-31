@@ -3,6 +3,7 @@
 	* Added patches from the think-open.at SVN repository for refactoring "ordering" into "orderBy"
 	* Added code from think-open.at SVN repository which introduce the "group by" configuration. Currently only the flexform configuration for the BE interface
 	* Added devlog debugging code from think-open.at SVN repository
+	* Added the "group by" code from the think-open.at SVN repository
 
 2010-10-29  Bernhard Kraft  <kraftb@think-open.at>
 	* Updated manual.sxw

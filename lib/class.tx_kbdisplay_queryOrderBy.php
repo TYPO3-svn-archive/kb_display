@@ -106,15 +106,16 @@ class tx_kbdisplay_queryOrderBy {
 		$parsed_item_orderBy = false;
 		if ($tableIdx === $this->tableIndex) {
 			if ($file = t3lib_div::getFileAbsFileName($flexItem_orderBy['field_sort_custom'])) {
-				$flexItem_orderBy['field_orderBy']['field'] = $field;
-				$flexItem_orderBy['field_orderBy']['table'] = $table;
-				$flexItem_orderBy['field_orderBy']['index'] = $tableIdx;
-				$flexItem_orderBy['field_orderBy']['current']['table'] = $this->table;
-				$flexItem_orderBy['field_orderBy']['current']['index'] = $this->tableIndex;
-				$flexItem_orderBy['fe_user'] = $GLOBALS['TSFE']->loginUser ? $GLOBALS['TSFE']->fe_user->user : false;
-				$flexItem_orderBy['direction_orderBy'] = $flexItem_orderBy['field_sort_direction'];
+				$orderBy['field'] = $field;
+				$orderBy['table'] = $table;
+				$orderBy['index'] = $tableIdx;
+				$orderBy['current']['table'] = $this->table;
+				$orderBy['current']['index'] = $this->tableIndex;
+				$orderBy['fe_user'] = $GLOBALS['TSFE']->loginUser ? $GLOBALS['TSFE']->fe_user->user : false;
+				$orderBy['direction'] = $flexItem_orderBy['field_sort_direction'];
 				$smarty = $this->rootObj->get_smartyClone();
-				$smarty->assign('order', $flexItem_orderBy);
+				$smarty->assign('orderBy', $orderBy);
+				$smarty->assign('flexItem', $flexItem_orderBy);
 				$smarty->setSmartyVar('template_dir', dirname($file));
 				$XML_orderBy = $smarty->display($file, md5($file));
 				$parsed_item_orderBy = t3lib_div::xml2array($XML_orderBy);
@@ -144,7 +145,7 @@ class tx_kbdisplay_queryOrderBy {
 	 * @return	void
 	 */
 	public function setQuery_orderBy() {
-		$this->queryGenerator->set_orders($this->parsed_orderBy, $this->tableIndex);
+		$this->queryGenerator->set_orderBy($this->parsed_orderBy, $this->tableIndex);
 	}
 
 }

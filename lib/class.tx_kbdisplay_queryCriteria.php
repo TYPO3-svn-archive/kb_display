@@ -278,7 +278,7 @@ AND
 					}
 				break;
 				case 'input':
-					// TODO: Retrieve all distinct values (confiurable length)
+					// TODO: Retrieve all distinct values (configurable length)
 				break;
 				case 'check':
 					$options = $this->getOptions_check($table, $field, $fieldKey);

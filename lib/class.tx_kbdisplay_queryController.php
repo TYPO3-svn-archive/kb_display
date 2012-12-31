@@ -114,6 +114,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		$filtersConnector = $this->parentObj->pi_getFFvalue($this->flexData, 'field_filtersConnector', 'sheet_filters');
 		$searchFields = $this->parentObj->pi_getFFvalue($this->flexData, 'field_search_fields', 'sheet_search');
 		$searchFields = t3lib_div::trimExplode(',', $searchFields, 1);
+		$fields_groupBy = $this->parentObj->pi_getFFvalue($this->flexData, 'field_groupBy_fields', 'sheet_groupBy');
 		$this->isSearch = ( is_array($searchFields) && count($searchFields) ) ? true : false;
 		if ($this->isSearch) {
 			$this->parse_searchWords();
@@ -157,8 +158,9 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 			'field_filtersConnector' => $filtersConnector,
 			'list_criteria_section' => $mainCriteria,
 			'list_filters_section' => $mainFilters,
-			'list_orderBy_section' => $this->main_OrderBy,
+			'list_orderBy_section' => $this->main_orderBy,
 			'field_search_fields' => $searchFields,
+			'field_groupBy_fields' => $fields_groupBy,
 		);
 		$this->mainTablesDef = array_merge($this->mainTablesDef, $this->enableChecks);
 	}

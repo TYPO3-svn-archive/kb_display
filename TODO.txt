@@ -3,4 +3,6 @@
 
 * Create code (compare template) which handles the "compareField"
 
+* Find a reasonable guideline when to use "t3lib_div::sysLog" or "t3lib_div::devLog"
+
 

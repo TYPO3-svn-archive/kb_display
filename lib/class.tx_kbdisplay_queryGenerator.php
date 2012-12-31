@@ -38,6 +38,7 @@ class tx_kbdisplay_queryGenerator {
 	private $fields = array();
 	private $whereParts = array();
 	private $parts_orderBy = array();
+	private $parts_groupBy = array();
 	private $limit = -1;
 
 	private $query = array(
@@ -238,6 +239,24 @@ class tx_kbdisplay_queryGenerator {
 	}
 
 	/**
+	 * Sets the "group by" clause contents
+	 *
+	 * @param	array		An array containing the fields for the "group by" clause
+	 * @param	integer		The index of the table of which the passed fields are???
+	 * @return	void
+	 */
+	public function set_groupBy($fields, $tableIdx) {
+		foreach ($fields as $item_groupBy) {
+			$idx = count($this->parts_groupBy);
+			$SQL_groupBy = $item_groupBy['field'];
+			$this->parts_groupBy[$idx] = array(
+					'item_groupBy' => $item_groupBy,
+					'SQL_groupBy' => $SQL_groupBy,
+			);
+		}
+	}
+	
+	/**
 	 * Sets the maximum number of rows to select
 	 *
 	 * @param	integer		The maximum numer of rows to select (0 for all)
@@ -353,6 +372,19 @@ class tx_kbdisplay_queryGenerator {
 	}
 
 	/**
+	 * Prepares previously set "group by" statement for the SQL query
+	 *
+	 * @return	void
+	 */
+	private function prepare_groupBy() {
+		$parts = array();
+		foreach ($this->parts_groupBy as $item_groupBy) {
+			$parts[] = $item_groupBy['SQL_groupBy'];
+		}
+		$this->query['GROUPBY'] = implode(', ', $parts);
+	}
+	
+	/**
 	 * Add the set row limit to the SQL query
 	 *
 	 * @return	void
@@ -393,6 +425,7 @@ class tx_kbdisplay_queryGenerator {
 		$this->prepare_from();
 		$this->prepare_where();
 		$this->prepare_orderBy();
+		$this->prepare_groupBy();
 		if (!($resultCount || $onlyUids)) {
 			$this->prepare_limit();
 		}
