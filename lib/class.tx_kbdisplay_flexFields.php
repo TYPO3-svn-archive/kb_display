@@ -44,11 +44,11 @@ class tx_kbdisplay_flexFields {
 		$result = array();
 		if (is_array($sectionElements) && count($sectionElements)) {
 			foreach ($sectionElements as $sectionElement) {
+				unset($sectionElement['_TOGGLE']);
 				$sectionElement = array_shift($sectionElement);
 				$sectionElement = array_shift($sectionElement);
-				$dataArray = $this->parseSectionElements_fields($sectionElement, $vDEF);
-				if (is_array($dataArray)) {
-					$result[] = $dataArray;
+				if (count($sectionElement)) {
+					$result[] = $this->parseSectionElements_fields($sectionElement, $vDEF);
 				}
 			}
 		}
