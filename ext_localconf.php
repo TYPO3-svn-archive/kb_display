@@ -19,4 +19,10 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['XCLASS']['t3lib/class.t3lib_tceforms.php'] = 
 
 t3lib_extMgm::addPItoST43($_EXTKEY, 'pi_cached/class.tx_kbdisplay_pi_cached.php', '_pi_cached', 'list_type', 1);
 
+
+$_EXTCONF = unserialize($_EXTCONF);
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$_EXTKEY]['debugQuery'] = intval($_EXTCONF['debugQuery']);
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$_EXTKEY]['debugDynamicFlexforms'] = intval($_EXTCONF['debugDynamicFlexforms']);
+
 ?>
+

@@ -130,6 +130,9 @@
 
 			<label index="pi_cached_search">Search</label>
 			<label index="pi_cached_search__search_fields">Search fields</label>
+
+			<label index="pi_cached_groupBy">Group by</label>
+			<label index="pi_cached_groupBy__groupBy_fields">"Group by" fields</label>
 		</languageKey>
 	</data>
 </T3locallang>

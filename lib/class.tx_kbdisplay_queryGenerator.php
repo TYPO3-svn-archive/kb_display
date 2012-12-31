@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2012 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -37,7 +37,7 @@ class tx_kbdisplay_queryGenerator {
 	private $tables = array();
 	private $fields = array();
 	private $whereParts = array();
-	private $orderParts = array();
+	private $parts_orderBy = array();
 	private $limit = -1;
 
 	private $query = array(
@@ -226,13 +226,13 @@ class tx_kbdisplay_queryGenerator {
 	 * @param	integer		The index of the table of which the passed fields are???
 	 * @return	void
 	 */
-	public function set_orders($fields, $tableIdx) {
-		foreach ($fields as $order) {
-			$idx = count($this->orderParts);
-			$orderSQL = $order['field'].' '.$order['direction'];
-			$this->orderParts[$idx] = array(
-				'orderArray' => $order,
-				'orderSQL' => $orderSQL,
+	public function set_orderBy($fields, $tableIdx) {
+		foreach ($fields as $item_orderBy) {
+			$idx = count($this->parts_orderBy);
+			$SQL_orderBy = $item_orderBy['field'].' '.$item_orderBy['direction'];
+			$this->parts_orderBy[$idx] = array(
+				'array_orderBy' => $item_orderBy,
+				'SQL_orderBy' => $SQL_orderBy,
 			);
 		}
 	}
@@ -344,10 +344,10 @@ class tx_kbdisplay_queryGenerator {
 	 *
 	 * @return	void
 	 */
-	private function prepare_order() {
+	private function prepare_orderBy() {
 		$parts = array();	
-		foreach ($this->orderParts as $order) {
-			$parts[] = $order['orderSQL'];
+		foreach ($this->parts_orderBy as $item_orderBy) {
+			$parts[] = $item_orderBy['SQL_orderBy'];
 		}
 		$this->query['ORDERBY'] = implode(', ', $parts);
 	}
@@ -392,7 +392,7 @@ class tx_kbdisplay_queryGenerator {
 		$this->prepare_fields($resultCount, $onlyUids);
 		$this->prepare_from();
 		$this->prepare_where();
-		$this->prepare_order();
+		$this->prepare_orderBy();
 		if (!($resultCount || $onlyUids)) {
 			$this->prepare_limit();
 		}
@@ -435,14 +435,19 @@ class tx_kbdisplay_queryGenerator {
 			$GLOBALS['TYPO3_DB']->sql_free_result($this->result);
 			$this->result = false;
 		}
-//$GLOBALS['TYPO3_DB']->debugOutput = true;
-//$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
-//print_r($this->query);
-//exit();
-//print_r($this->query);
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugQuery']) {
+			$GLOBALS['TYPO3_DB']->debugOutput = true;
+			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
+			t3lib_div::devLog('Prepared query', 'kb_display', 0, $this->query);
+		}
 		$this->result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($this->query);
-//echo "\n".$GLOBALS['TYPO3_DB']->debug_lastBuiltQuery."\n";
-//exit();
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugQuery']) {
+			if ($this->result) {
+				t3lib_div::devLog('Query executed successfully', 'kb_display', -1, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
+			} else {
+				t3lib_div::devLog('Query failed', 'kb_display', 3, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
+			}
+		}
 		return $this->result?true:false;
 	}
 

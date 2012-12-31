@@ -74,6 +74,7 @@
 							</field_resultname>
 							<field_criteriaConnector>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteriaConnector_tpl.xml</field_criteriaConnector>
 							<list_criteria_section>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteria_tpl.xml</list_criteria_section>
+							<field_groupBy_fields>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__groupBy_tpl.xml</field_groupBy_fields>
 						</el>
 					</item_table>
 				</el>

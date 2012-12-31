@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2012 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -24,14 +24,14 @@
 
 
 require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryCriteria.php');
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryOrder.php');
+require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryOrderBy.php');
 
 /**
  * Class for handling of each flexform table definition
  *
  * @author	Bernhard Kraft <kraftb@think-open.at>
  * @package	TYPO3
- * @subpackage	tx_kbt3tris
+ * @subpackage	tx_display
  */
 class tx_kbdisplay_queryTable {
 	private $parentObj = null;
@@ -46,7 +46,7 @@ class tx_kbdisplay_queryTable {
 	private $joinType = null;
 	private $criteriaConnector = null;
 	private $criteriaArray = array();
-	private $orderArray = array();
+	private $config_orderBy = array();
 
 	private $filtersConnector = null;
 	private $searchConnector = null;
@@ -64,7 +64,7 @@ class tx_kbdisplay_queryTable {
 		$this->criteriaObj = t3lib_div::makeInstance('tx_kbdisplay_queryCriteria');
 		$this->filtersObj = t3lib_div::makeInstance('tx_kbdisplay_queryCriteria');
 		$this->searchObj = t3lib_div::makeInstance('tx_kbdisplay_queryCriteria');
-		$this->orderObj = t3lib_div::makeInstance('tx_kbdisplay_queryOrder');
+		$this->obj_orderBy = t3lib_div::makeInstance('tx_kbdisplay_queryOrderBy');
 	}
 
 	/**
@@ -137,7 +137,7 @@ class tx_kbdisplay_queryTable {
 		$this->criteriaArray = $this->table_flexFormData['list_criteria_section'];
 		$this->filtersArray = $this->table_flexFormData['list_filters_section'];
 		$this->searchArray = $this->table_flexFormData['field_search_fields'];
-		$this->orderArray = $this->table_flexFormData['list_ordering_section'];
+		$this->config_orderBy = $this->table_flexFormData['list_orderBy_section'];
 
 		$this->queryGenerator = &$this->get_queryGenerator();
 
@@ -145,7 +145,7 @@ class tx_kbdisplay_queryTable {
 		$this->filtersObj->init($this, $this->rootObj, 'filters');
 		$this->searchObj->init($this, $this->rootObj);
 
-		$this->orderObj->init($this, $this->rootObj);
+		$this->obj_orderBy->init($this, $this->rootObj);
 	}
 
 	/**
@@ -213,10 +213,10 @@ class tx_kbdisplay_queryTable {
 			$this->criteriaObj->setQuery_onClause($this->criteriaConnector, $idx, $combineResults);
 		}
 
-		$this->orderObj->set_table($this->table);
-		$this->orderObj->set_ordering($this->orderArray);
-		$this->orderObj->parse_ordering();
-		$this->orderObj->setQuery_order($idx);
+		$this->obj_orderBy->set_table($this->table);
+		$this->obj_orderBy->set_orderBy($this->config_orderBy);
+		$this->obj_orderBy->parse_orderBy();
+		$this->obj_orderBy->setQuery_orderBy($idx);
 
 		$this->queryGenerator->set_enableFields($idx, $this->enableFields);
 		$this->getFields();

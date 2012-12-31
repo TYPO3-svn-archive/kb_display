@@ -47,9 +47,13 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 			if (file_exists($cacheFile)) {
 				include($cacheFile);
 				$dataStructArray = $data;
+				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugDynamicFlexforms']) {
+					t3lib_div::devLog('Used cached flexform XML', 'kb_display', 0, $dataStructArray);
+				}
 				return;
 			}
 		}
+			// Why this ???
 		if ($level < 2) {
 //		if ($conf) {
 			$this->currentRecursion = $this->maxRecursion;
@@ -86,6 +90,9 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 			if (is_array($dataStructArray)) {
 				$this->writeCacheFile($cacheFile, $dataStructArray);
 			}
+		}
+		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugDynamicFlexforms']) {
+			t3lib_div::devLog('Generated (and cached) flexform XML', 'kb_display', 0, $dataStructArray);
 		}
 	}
 
@@ -183,7 +190,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 						} else {
 							print_r(array_keys($fieldCriteriaConfig));
 							print_r($fieldConfig);
-							die('TODO: Create code for setCriteriaFields_table / TCA-type: group');
+							die('TODO: Create code for setCriteriaFields_table / TCA-type: group other than "internal_type=file/db"');
 						}
 					break;
 					case 'select':

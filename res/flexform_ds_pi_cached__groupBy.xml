@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<type>array</type>
+	<ROOT>
+		<TCEforms>
+			<sheetTitle>LLL:EXT:kb_display/locallang.xml:pi_cached_groupBy</sheetTitle>
+		</TCEforms>
+		<el>
+			<field_groupBy_fields>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__groupBy_tpl.xml</field_groupBy_fields>
+		</el>
+	</ROOT>
+</T3DataStructure>
+

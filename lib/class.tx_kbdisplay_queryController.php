@@ -67,6 +67,12 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		$this->initObject_queryGenerator();
 		$this->set_limit();
 		// Initialize the "queryFetcher" object instance (not a clone of Terry Fletcher ;)
+		// Hmm. I always seem to mix those two up. I tought "Terry Fletcher" would be the person
+		// in the TV series: "Murder, she wrote" (German: Mord ist ihr Hobby).
+		// But after looking it up now on Wikipedia I found that the main actor of this TV series
+		// is named "Jessica Beatrice Fletcher". There is also another person sounding similar:
+		// "Terry Pratchett" who is the author of the "Discworld" fantasy novels.
+		// Maybe queryFetcher uhm ... Terry Fetcher is some illegitimate child of both :)
 		$this->initObject_queryFetcher();
 		// Initialize the "rowProcessor" object instance
 		$this->initObject_rowProcessor();
@@ -119,8 +125,8 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		$mainFiltersArray = $this->flexData['data']['sheet_filters']['lDEF']['list_filters_section']['el'];
 		$mainFilters = $this->parseSectionElements($mainFiltersArray);
 
-		$mainOrderingArray = $this->flexData['data']['sheet_sorting']['lDEF']['list_sorting_section']['el'];
-		$this->mainOrdering = $this->parseSectionElements($mainOrderingArray);
+		$array_main_orderBy = $this->flexData['data']['sheet_sorting']['lDEF']['list_sorting_section']['el'];
+		$this->main_orderBy = $this->parseSectionElements($array_main_orderBy);
 
 		if ($this->rootObj->mode === 'singleView') {
 			if (is_array($this->rootObj->showUids) && (count($this->rootObj->showUids)>1)) {
@@ -151,7 +157,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 			'field_filtersConnector' => $filtersConnector,
 			'list_criteria_section' => $mainCriteria,
 			'list_filters_section' => $mainFilters,
-			'list_ordering_section' => $this->mainOrdering,
+			'list_orderBy_section' => $this->main_OrderBy,
 			'field_search_fields' => $searchFields,
 		);
 		$this->mainTablesDef = array_merge($this->mainTablesDef, $this->enableChecks);
@@ -232,7 +238,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		if ($data) {
 			$idx = $this->initObject_queryTables();
 			$data = array_merge($data, $this->enableChecks);
-			$data['list_ordering_section'] = $this->mainOrdering;
+			$data['list_orderBy_section'] = $this->main_orderBy;
 			$this->tableObjects[$idx]->set_flexData($data);
 			return $idx;
 		} else {

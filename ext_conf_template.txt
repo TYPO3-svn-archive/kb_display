@@ -1,0 +1,7 @@
+
+	# cat=plugin.tx_kbdisplay; type=boolean; label=Debug query: Enable this checkbox to get some debug output of the generated query.
+debugQuery = 0
+
+	# cat=plugin.tx_kbdisplay; type=boolean; label=Debug dynamic flexforms: When this option is set the generated XML of flexforms will be sent to devlog
+debugDynamicFlexforms = 0
+

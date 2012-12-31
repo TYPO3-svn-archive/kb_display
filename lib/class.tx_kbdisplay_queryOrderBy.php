@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2012 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -30,15 +30,15 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
  *
  * @author	Bernhard Kraft <kraftb@think-open.at>
  * @package	TYPO3
- * @subpackage	tx_kbt3tris
+ * @subpackage	tx_kbdisplay
  */
-class tx_kbdisplay_queryOrder {
+class tx_kbdisplay_queryOrderBy {
 	private $parentObj = null;
 	private $rootObj = null;
 	private $table = null;
 	private $tableIndex = null;
-	private $ordering_flexFormData = array();
-	private $ordering = array();
+	private $flexFormData_orderBy = array();
+	private $parsed_orderBy = array();
 
 	/**
 	 * Initialize the object instance
@@ -53,17 +53,17 @@ class tx_kbdisplay_queryOrder {
 	}
 
 	/**
-	 * Set ordering flexform data
+	 * Set "order by" flexform data
 	 *
 	 * @param	array		The flexform data of criterias set
 	 * @return	void
 	 */
-	public function set_ordering($orderingData) {
-		$this->ordering_flexFormData = $orderingData;
+	public function set_orderBy($config_orderBy) {
+		$this->flexFormData_orderBy = $config_orderBy;
 	}
 
 	/**
-	 * Sets the table which is being processed by the criteria object instance
+	 * Sets the table which is being processed by the orderBy object instance
 	 *
 	 * @param		string		The table being processed
 	 * @return	void
@@ -75,83 +75,83 @@ class tx_kbdisplay_queryOrder {
 	}
 
 	/**
-	 * Parse ordering flexform data
+	 * Parse "order by" flexform data
 	 *
 	 * @return	integer		The number of order statements
 	 */
-	public function parse_ordering() {
-		if (is_array($this->ordering_flexFormData)) {
-			foreach ($this->ordering_flexFormData as $ordering) {
-				$order = $this->parse_order($ordering);
-				if ($order) {
-					$this->ordering[] = $order;
+	public function parse_orderBy() {
+		if (is_array($this->flexFormData_orderBy)) {
+			foreach ($this->flexFormData_orderBy as $flexItem_orderBy) {
+				$item_orderBy = $this->parse_item_orderBy($flexItem_orderBy);
+				if ($item_orderBy) {
+					$this->parsed_orderBy[] = $item_orderBy;
 				}
 			}
 		}
-		return count($this->ordering);
+		return count($this->parsed_orderBy);
 	}
 
 	/**
-	 * Parses an flexform order definition into a order-definition array suitable for a query object instance
+	 * Parses an flexform "order by" definition into a order-definition array suitable for a query object instance
 	 *
 	 * @param	array		A parsed criteria flexform definition
 	 * @return	array		The where definition for a criteria
 	 */
-	private function parse_order($order) {
-		$field = $order['field_sort_field'];
+	private function parse_item_orderBy($flexItem_orderBy) {
+		$field = $flexItem_orderBy['field_sort_field'];
 		list($field, $tableIdx) = explode('__', $field);
 		$tableIdx = intval($tableIdx);
 		$table = $this->parentObj->get_tableName($tableIdx);
 
-		$orderData = false;
+		$parsed_item_orderBy = false;
 		if ($tableIdx === $this->tableIndex) {
-			if ($file = t3lib_div::getFileAbsFileName($order['field_sort_custom'])) {
-				$order['orderField']['field'] = $field;
-				$order['orderField']['table'] = $table;
-				$order['orderField']['index'] = $tableIdx;
-				$order['orderField']['current']['table'] = $this->table;
-				$order['orderField']['current']['index'] = $this->tableIndex;
-				$order['fe_user'] = $GLOBALS['TSFE']->loginUser ? $GLOBALS['TSFE']->fe_user->user : false;
-				$order['orderDirection'] = $order['field_sort_direction'];
+			if ($file = t3lib_div::getFileAbsFileName($flexItem_orderBy['field_sort_custom'])) {
+				$flexItem_orderBy['field_orderBy']['field'] = $field;
+				$flexItem_orderBy['field_orderBy']['table'] = $table;
+				$flexItem_orderBy['field_orderBy']['index'] = $tableIdx;
+				$flexItem_orderBy['field_orderBy']['current']['table'] = $this->table;
+				$flexItem_orderBy['field_orderBy']['current']['index'] = $this->tableIndex;
+				$flexItem_orderBy['fe_user'] = $GLOBALS['TSFE']->loginUser ? $GLOBALS['TSFE']->fe_user->user : false;
+				$flexItem_orderBy['direction_orderBy'] = $flexItem_orderBy['field_sort_direction'];
 				$smarty = $this->rootObj->get_smartyClone();
-				$smarty->assign('order', $order);
+				$smarty->assign('order', $flexItem_orderBy);
 				$smarty->setSmartyVar('template_dir', dirname($file));
-				$orderXML = $smarty->display($file, md5($file));
-				$orderData = t3lib_div::xml2array($orderXML);
-				if (!is_array($orderData)) {
+				$XML_orderBy = $smarty->display($file, md5($file));
+				$parsed_item_orderBy = t3lib_div::xml2array($XML_orderBy);
+				if (!is_array($parsed_item_orderBy)) {
 					die('Invalid order XML for field "'.$field.'"!');
 				}
-				if (!$orderData['field']) {
+				if (!$parsed_item_orderBy['field']) {
 					die('Invalid order XML for field "'.$field.'". Array key "field" missing!');
 				}
-				if (!$orderData['direction']) {
+				if (!$parsed_item_orderBy['direction']) {
 					die('Invalid order XML for field "'.$field.'". Array key "direction" missing!');
 				}
 			} else {
-				$orderData = array(
+				$parsed_item_orderBy = array(
 					'field' => '`'.$table.'__'.$tableIdx.'`.`'.$field.'`',
-					'direction' => $order['field_sort_direction'],
+					'direction' => $flexItem_orderBy['field_sort_direction'],
 				);
 			}
 		}
-		return $orderData;
+		return $parsed_item_orderBy;
 	}
 
 	/**
-	 * Sets the parsed criterias in the queryGenerator object instance using passed combination operator
+	 * Sets the parsed "order by" statement in the queryGenerator object instance
 	 *
 	 * @param	string		The combination operator (AND/OR) for the parsed criterias
 	 * @return	void
 	 */
-	public function setQuery_order() {
-		$this->queryGenerator->set_orders($this->ordering, $this->tableIndex);
+	public function setQuery_orderBy() {
+		$this->queryGenerator->set_orders($this->parsed_orderBy, $this->tableIndex);
 	}
 
 }
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryOrder.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryOrder.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryOrderBy.php']) {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryOrderBy.php']);
 }
 
 ?>

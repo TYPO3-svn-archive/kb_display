@@ -8,10 +8,8 @@
 		<sheet_tables>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__tables.xml</sheet_tables>
 		<sheet_criteria>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteria.xml</sheet_criteria>
 		<sheet_filters>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__filters.xml</sheet_filters>
-		<sheet_sorting>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__sorting.xml</sheet_sorting>
+		<sheet_groupBy>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__groupBy.xml</sheet_groupBy>
+		<sheet_sorting>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__sorting.xml</sheet_sorting>		
 		<sheet_search>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__search.xml</sheet_search>
-<!--
-		<sheet_search>EXT:kb_display/res/flexform_ds_pi_cached__search.xml</sheet_search>
--->
 	</sheets>
 </T3DataStructure>

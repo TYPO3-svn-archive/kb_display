@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+	<TCEforms>
+		<exclude>1</exclude>
+		<label>LLL:EXT:kb_display/locallang.xml:pi_cached_groupBy__groupBy_fields</label>
+			<config>
+				<type>select</type>
+				<size>10</size>
+				<autoSizeMax>35</autoSizeMax>
+				<maxitems>30</maxitems>
+				<items>
+				</items>
+				<itemsProcFunc>EXT:kb_display/class.tx_kbdisplay_itemsProc.php:&amp;tx_kbdisplay_itemsProc->compareFields</itemsProcFunc>
+			</config>
+	</TCEforms>
+</T3DataStructure>
