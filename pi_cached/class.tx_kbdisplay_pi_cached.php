@@ -335,7 +335,7 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 
 			// There are probably more results. Retrieve the number of total results.
 			$this->queryController->queryExecute(true);
-			$this->queryController->fetchResult(true, true);
+			$this->queryController->fetchResult(false, true);
 			list($resultRow) = $this->queryController->getResult(true);
 			$this->resultCount = intval($resultRow['cnt']);
 		}

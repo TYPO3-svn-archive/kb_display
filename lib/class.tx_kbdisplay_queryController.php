@@ -295,7 +295,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 			$subQueryController->tables_process(true);
 			// Let the query get executed
 			$subQueryController->queryExecute(false, true);
-			$subQueryController->fetchResult(true, true);
+			$subQueryController->fetchResult(false, true);
 			$uidRows = $subQueryController->getResult(true);
 			if (is_array($uidRows)) {
 				$uidRows = array_map('array_pop', $uidRows);
@@ -366,11 +366,11 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 *
 	 * @return	void
 	 */
-	public function fetchResult($noSubQueries = false, $clearFetcher = false) {
+	public function fetchResult($makeSubQueries = true, $clearFetcher = false) {
 		// Let the query fetcher object instance retrieve all result rows from database
 		if (!$this->isSearch || $this->searchWords) {
 			$this->queryFetcher->fetchResult($clearFetcher);
-			if (!$noSubQueries && is_array($this->sub_queryGenerators) && count($this->sub_queryGenerators)) {
+			if ($makeSubQueries && is_array($this->sub_queryGenerators) && count($this->sub_queryGenerators)) {
 				$tmp_resultData = &$this->queryFetcher->get_resultData();
 				if (is_array($tmp_resultData)) {
 					foreach ($this->sub_queryGenerators as $queryIdx => &$queryGenerator) {
