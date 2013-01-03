@@ -1,3 +1,8 @@
+2013-02-03  Bernhard Kraft  <kraftb@think-open.at>
+	* Moved a logging call to the correct place
+	* Fixed caching of dynamic generated flexform XML files
+	* Fixed an error with wrong fieldname in dynamic generated flexform XML
+
 2013-02-02  Bernhard Kraft  <kraftb@think-open.at>
 	* Removed a double negation (!$noSubQueries ...
 

@@ -88,11 +88,14 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 		}
 		if (($level === 0) && !file_exists($cacheFile)) {
 			if (is_array($dataStructArray)) {
-				$this->writeCacheFile($cacheFile, $dataStructArray);
+				$ok = $this->writeCacheFile($cacheFile, $dataStructArray);
 			}
-		}
-		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugDynamicFlexforms']) {
-			t3lib_div::devLog('Generated (and cached) flexform XML', 'kb_display', 0, $dataStructArray);
+			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugDynamicFlexforms']) {
+				t3lib_div::devLog('Generated '.($ok ? '(and cached) ' : '').'flexform XML', 'kb_display', 0, $dataStructArray);
+				if (!$ok) {
+					t3lib_div::devLog('Error caching flexform XML. Does "typo3temp/kb_display/" exist and is writable?', 'kb_display', 2);
+				}
+			}
 		}
 	}
 
@@ -102,7 +105,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 		$cacheData .= $this->getArrayCode($currentData);
 		$cacheData .= ');';
 		$cacheData .= '?>';
-		t3lib_div::writeFile($cacheFile, $cacheData);
+		return t3lib_div::writeFile($cacheFile, $cacheData);
 	}
 
 	private function getArrayCode($currentData, $level = 0) {
@@ -229,7 +232,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 						$eval = implode(',', $eval);
 						switch ($eval) {
 							case 'int':
-								$fieldCriteriaConfig['field_compare_type_number']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_number']['TCEforms']['displayCond'] .= ','.$field;
 								$fieldCriteriaConfig['field_compare_value_int']['TCEforms']['displayCond'] .= ','.$field;
 							break;
 							case '':
@@ -251,7 +254,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 								$fieldCriteriaConfig['field_compare_value_date']['TCEforms']['displayCond'] .= ','.$field;
 							break;
 							case 'double2':
-								$fieldCriteriaConfig['field_compare_type_number']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_number']['TCEforms']['displayCond'] .= ','.$field;
 								$fieldCriteriaConfig['field_compare_value_double']['TCEforms']['displayCond'] .= ','.$field;
 							break;
 							case 'nospace':
