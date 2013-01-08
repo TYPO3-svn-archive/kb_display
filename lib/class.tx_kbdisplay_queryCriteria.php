@@ -426,6 +426,7 @@ AND
 			'foreignTable' => $foreignTable,
 			'where' => $where,
 			'fieldKey' => $fieldKey,
+			'fieldValue' => $fieldValue,
 			'queryParts' => &$queryParts,
 			'criteriaObject' => &$this,
 		);

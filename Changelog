@@ -1,10 +1,14 @@
-2013-02-03  Bernhard Kraft  <kraftb@think-open.at>
+2013-01-08  Bernhard Kraft  <kraftb@think-open.at>
+	* Added a way to modify the smarty-delimiters from within TypoScript (if something else than HTML gets generated like JSON it makes sense to set the smarty delimiters to "<>" instead of "{}" for example)
+	* Fixed an issue in lib/class.tx_kbdisplay_queryCriteria.php: The new added method argument "fieldValue" didn't get passed to hooks
+
+2013-01-03  Bernhard Kraft  <kraftb@think-open.at>
 	* Moved a logging call to the correct place
 	* Fixed caching of dynamic generated flexform XML files
 	* Fixed an error with wrong fieldname in dynamic generated flexform XML
 	* Created a proper compare template for integer values
 
-2013-02-02  Bernhard Kraft  <kraftb@think-open.at>
+2013-01-02  Bernhard Kraft  <kraftb@think-open.at>
 	* Removed a double negation (!$noSubQueries ...
 
 2012-12-31  Bernhard Kraft  <kraftb@think-open.at>

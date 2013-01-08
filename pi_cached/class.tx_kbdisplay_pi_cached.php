@@ -358,6 +358,10 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 			return $this->pi_getLL('pi_noTemplateFile', 'No template file configured !');
 		}
 		$this->smarty->setSmartyVar('template_dir', $templateDir);
+		if (is_array($this->useConfig['smarty.']['delimiter.']) && $this->useConfig['smarty.']['delimiter.']['left'] && $this->useConfig['smarty.']['delimiter.']['right']) {
+			$this->smarty->left_delimiter = $this->useConfig['smarty.']['delimiter.']['left'];
+			$this->smarty->right_delimiter = $this->useConfig['smarty.']['delimiter.']['right'];
+		}
 		return $this->smarty->display($templateFile, '', md5($templateDir));
 	}
 
