@@ -40,6 +40,9 @@ class tx_kbdisplay_queryCriteria {
 	private $criterias = array();
 	private $criteriaKeys = array();
 	private $criteriaType = 'criterias';
+	private $cObj = null;
+	private $useConfig = null;
+	private $prefixId = '';
 
 	private $filterVars = array();
 	private $filterValue = array();
@@ -185,7 +188,7 @@ AND
 			$criterias = array();
 			$whereParts = array();
 			foreach ($this->criterias_flexFormData as $field) {
-				$this->filterValue[$field] = $searchWord;
+				$this->filterValue[$field] = htmlspecialchars($searchWord);
 				$criteria = array(
 					'field_compare_field' => $field,
 				);
@@ -497,7 +500,7 @@ AND
 	 * @param		string		The field key like it should get used as GET/POST variable name
 	 * @return		string		The link for the passed row
 	 */
-	private function getOption_link($table, $field, $foreignTable, $value, $data, $fieldKey) {
+	protected function getOption_link($table, $field, $foreignTable, $value, $data, $fieldKey) {
 		if ($linkConfig = $this->useConfig['itemList.']['filter.'][$table.'.'][$field.'.']['link.']) {
 			$this->cObj->data['link_table'] = $table;
 			$this->cObj->data['link_field'] = $field;

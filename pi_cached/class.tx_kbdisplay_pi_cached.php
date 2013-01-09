@@ -82,13 +82,20 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 	var $queryResult = false;
 	var $cObjects = false;
 	var $errors = array();
+	var $hookConfig = array();
 
 	// These variables will hold the class instances required for generating, query and fetching, and processing of database rows
-	var $queryController = NULL;
-	var $rowProcessor = NULL;
+	public $queryController = NULL;
+	public $rowProcessor = NULL;
 
 	var $page = 0;
 	var $pagebrowser = 0;
+
+
+	function tx_kbdisplay_pi_cached() {
+		$this->hookConfig = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['hooks'];
+		parent::tslib_pibase();
+	}
 
 	function main($content,$conf)	{
 		$this->hook('early_main');
@@ -125,7 +132,6 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 	function main_ext($content,$conf)	{
 		// Early hook at the beginning of method
 		$this->hook('early_main_ext');
-
 		$this->renderUid = intval($this->piVars['plugin']);
 		if ($this->renderUid && ($this->renderUid != $this->selfUid)) {
 			return '';
@@ -220,7 +226,7 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 	}
 
 	public function hook($name, $params = array()) {
-		if (is_array($hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['hooks'][$name])) {
+		if (is_array($hooks = $this->hookConfig[$name])) {
 			foreach ($hooks as $hookKey => $hookConfig) {
 				$params['hook'] = $name;
 				$params['key'] = $hookKey;

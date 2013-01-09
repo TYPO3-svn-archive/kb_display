@@ -1,3 +1,9 @@
+2013-01-09  Bernhard Kraft  <kraftb@think-open.at>
+	* Fixed an issue with search query passed by HTTP not being escaped for criteria XML
+	* Created a member variable "hookConfig" in the pi_cached FE class for more direct access to the hook configuration from TYPO3_CONF_VARS
+	* Changed a method to protected. Probably most methods should be protected - not private
+	* Added hooks to the queryController and juggled around the member variables at the class head
+
 2013-01-08  Bernhard Kraft  <kraftb@think-open.at>
 	* Added a way to modify the smarty-delimiters from within TypoScript (if something else than HTML gets generated like JSON it makes sense to set the smarty delimiters to "<>" instead of "{}" for example)
 	* Fixed an issue in lib/class.tx_kbdisplay_queryCriteria.php: The new added method argument "fieldValue" didn't get passed to hooks

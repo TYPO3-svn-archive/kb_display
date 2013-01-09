@@ -37,20 +37,20 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryTable.php');
 class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	private $parentObj = null;
 	private $rootObj = null;
-	private $extraTablesDef = array();
-	private $mainTablesDef = array();
-	private $tableObjects = array();
-	private $resultData = array();
-
 	private $queryGenerator = null;
 	private $queryFetcher = null;
 	private $rowProcessor = null;
-
 	private $sub_queryGenerators = array();
-	private $sub_queryResults = array();
 
-	private $isSearch = false;
-	private $searchWords = array();
+	protected $extraTablesDef = array();
+	protected $mainTablesDef = array();
+	protected $tableObjects = array();
+	protected $resultData = array();
+
+	protected $sub_queryResults = array();
+
+	protected $isSearch = false;
+	protected $searchWords = array();
 
 	/**
 	 * Initialize the object instance
@@ -102,6 +102,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 * @return	void
 	 */
 	public function parseFlexform() {
+		$this->rootObj->hook('queryController/parseFlexform/begin');
 		$additionalTables = $this->flexData['data']['sheet_tables']['lDEF']['list_tables']['el'];
 		$this->extraTablesDef = $this->parseSectionElements($additionalTables);
 
@@ -163,6 +164,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 			'field_groupBy_fields' => $fields_groupBy,
 		);
 		$this->mainTablesDef = array_merge($this->mainTablesDef, $this->enableChecks);
+		$this->rootObj->hook('queryController/parseFlexform/end');
 	}
 
 	/*
