@@ -1,3 +1,6 @@
+2013-01-17  Bernhard Kraft  <kraftb@think-open.at>
+	* Fixed a bug in tx_kbdisplay_pi_cached: Wrong variable was used
+
 2013-01-09  Bernhard Kraft  <kraftb@think-open.at>
 	* Fixed an issue with search query passed by HTTP not being escaped for criteria XML
 	* Created a member variable "hookConfig" in the pi_cached FE class for more direct access to the hook configuration from TYPO3_CONF_VARS

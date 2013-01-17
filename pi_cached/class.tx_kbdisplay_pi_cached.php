@@ -559,7 +559,7 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 		$this->showUid = intval($this->piVars['view']);
 		if (is_array($this->config['showUid.'])) {
 			$uidResult = $this->cObj->stdWrap($this->showUid, $this->config['showUid.']);
-			$this->showUid = intval($showUid);
+			$this->showUid = intval($uidResult);
 			$this->showUids = t3lib_div::intExplode(',', $uidResult);
 		}
 		$doShow = false;
