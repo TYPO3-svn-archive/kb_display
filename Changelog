@@ -1,3 +1,11 @@
+2013-01-31  Bernhard Kraft  <kraftb@think-open.at>
+	* Added a class which extends t3lib_DB so it creates a new connection (required for asynchrous queries
+	* Fixed realURL cHash calculation. Now uses t3lib_div::calculateCHash instead of t3lib_div::shortMD5
+	* Added timing code ($timing) to some time critical methods
+	* Implmenented asynchronous /unbuffered) query for the main query.
+	* Prepared asynchronous queries for the sub queries. (Not fully implmemented yet)
+	* Added TypoScript configuration option which allows to inhibit the retrieval of filter options (altough filters still work)
+
 2013-01-17  Bernhard Kraft  <kraftb@think-open.at>
 	* Fixed a bug in tx_kbdisplay_pi_cached: Wrong variable was used
 

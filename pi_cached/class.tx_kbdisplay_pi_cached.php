@@ -111,7 +111,7 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 		}
 
 		$this->hook('pre_main_ext');
-		$output = $this->main_ext($content, $conf);
+		$output = $this->main_ext($content);
 		$this->hook('post_main_ext');
 
 		if ($this->config['endCOA.']) {
@@ -126,10 +126,9 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 	 * The main method of the PlugIn
 	 *
 	 * @param		string				$content: The PlugIn content
-	 * @param		array					$conf: The PlugIn configuration
 	 * @return	string				The content that is displayed on the website
 	 */
-	function main_ext($content,$conf)	{
+	function main_ext($content)	{
 		// Early hook at the beginning of method
 		$this->hook('early_main_ext');
 		$this->renderUid = intval($this->piVars['plugin']);
@@ -310,43 +309,78 @@ class tx_kbdisplay_pi_cached extends tslib_pibase {
 
 		// INITIALIZATION:
 		// Initialize the "queryController" object instance
+// 		$timing = array();
+// 		$timing['start'] = microtime(true);
 		$this->initObject_queryController();
+// 		$timing['initObject_queryController'] = microtime(true);
 
 		// QUERY CONTROLLER:
 		// Let the query controller parse the flexform
 		$this->queryController->parseFlexform();
+// 		$timing['parseFlexform'] = microtime(true);
 
 		// Transfer data of main table from query controller to its main table object
 		$mainIdx = $this->queryController->tables_main_transferData();
+// 		$timing['tables_main_transferData'] = microtime(true);
 
 		// Transfer data of additional tables from query controller to extra table objects
 		$extraIdxArr = $this->queryController->tables_extra_transferData();
+// 		$timing['tables_extra_transferData'] = microtime(true);
 
 		// Let the query controller process each of its table objects: Parse criterias, on-clauses, etc.
 		// This will transfer all required information to the query generator
 		$this->queryController->tables_process();
+// 		$timing['tables_process'] = microtime(true);
 
 		if (!$disableQuery) {
+			// Prepare combining of rows
+			$doCombine = $this->queryController->prepareCombine();
+// 			$timing['prepareCombine'] = microtime(true);
+
 			// Let the query get executed
-			$this->queryController->queryExecute();
+			$this->queryController->queryExecute(false, false, !$doCombine);
+// 			$timing['queryExecute|false'] = microtime(true);
 
-			// Retrieve all result rows from database
-			$this->queryController->fetchResult();
+			if ($doCombine) {
+				// Retrieve all result rows from database
+				$this->queryController->fetchResult();
+// 				$timing['fetchResult'] = microtime(true);
 
-			// Handle all result transformations
-			$this->queryController->transformResult();
+				// Handle all result transformations
+				$this->queryController->transformResult();
+// 				$timing['transformResult'] = microtime(true);
 
-			// Retrieve results
-			$this->resultData = $this->queryController->getResult();
+				// Retrieve results
+				$this->resultData = $this->queryController->getResult();
+// 				$timing['getResult'] = microtime(true);
+			} else {
+				// Retrieve all result rows from database and let fetcher handle row transformations
+				$this->queryController->fetchResult(true, false, true);
+// 				$timing['fetchResult|true'] = microtime(true);
+
+				// Retrieve results
+				// These results are not really "unprocessed" (true) but rather got already processed by the queryFetcher during retrieval time
+				$this->resultData = $this->queryController->getResult(true);
+// 				$timing['getResult'] = microtime(true);
+			}
+
 
 			// There are probably more results. Retrieve the number of total results.
-			$this->queryController->queryExecute(true);
-			$this->queryController->fetchResult(false, true);
-			list($resultRow) = $this->queryController->getResult(true);
-			$this->resultCount = intval($resultRow['cnt']);
+			if (!$this->useConfig['disableCount']) {
+				$this->queryController->queryExecute(true);
+// 				$timing['queryExecute|true'] = microtime(true);
+				$this->queryController->fetchResult(false, true);
+// 				$timing['fetchResult'] = microtime(true);
+				list($resultRow) = $this->queryController->getResult(true);
+// 				$timing['getResult'] = microtime(true);
+				$this->resultCount = intval($resultRow['cnt']);
+// 				$timing['intval'] = microtime(true);
+			}
 		}
+// 		storeTiming($timing);
 		return true;
 	}
+
 
 	/**
 	 * Renders the retrieved content into the smarty template

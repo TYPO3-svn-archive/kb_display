@@ -57,9 +57,17 @@ class tx_kbdisplay_queryGenerator {
 	 * @param	object		A pointer to the parent object instance (The FE-plugin)
 	 * @return	void
 	 */
-	public function init(&$parentObj, &$rootObj) {
+	public function init(&$parentObj, &$rootObj, $alternateLink = false) {
 		$this->parentObj = &$parentObj;
 		$this->rootObj = &$rootObj;
+//		$this->DB = $GLOBALS['TYPO3_DB'];
+
+//		if ($alternateLink) {
+			$this->DB = t3lib_div::makeInstance('tx_kbdisplay_db');
+			$this->DB->debugOutput = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sqlDebug'];
+			$link = $this->DB->sql_pconnect(TYPO3_db_host, TYPO3_db_username, TYPO3_db_password);
+			$this->DB->sql_select_db(TYPO3_db);
+//		}
 	}
 
 	private function initQueryArray() {
@@ -451,7 +459,7 @@ class tx_kbdisplay_queryGenerator {
 			$tableName = $this->parentObj->get_tableName($tableIdx);
 			$replaceKey = '`'.$tableName.'__'.$tableIdx.'`.`'.$field.'`';
 			$replaceKeys[] = $replaceKey;
-			$replaceValues[] = $GLOBALS['TYPO3_DB']->fullQuoteStr($replaceValue, $tableName);
+			$replaceValues[] = $this->DB->fullQuoteStr($replaceValue, $tableName);
 		}
 //print_r($replaceKeys);
 //print_r($replaceValues);
@@ -463,22 +471,28 @@ class tx_kbdisplay_queryGenerator {
 	 *
 	 * @return	boolean		Wheter the SELECT query was successfull or not (meaning: returned a result resource)
 	 */
-	public function queryExecute() {
+	public function queryExecute($unbufferedQuery = false) {
 		if ($this->result) {
-			$GLOBALS['TYPO3_DB']->sql_free_result($this->result);
+			$this->DB->sql_free_result($this->result);
 			$this->result = false;
 		}
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugQuery']) {
-			$GLOBALS['TYPO3_DB']->debugOutput = true;
-			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
+			$this->DB->debugOutput = true;
+			$this->DB->store_lastBuiltQuery = true;
 			t3lib_div::devLog('Prepared query', 'kb_display', 0, $this->query);
 		}
-		$this->result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($this->query);
+		$query = $this->DB->SELECTquery($this->query['SELECT'], $this->query['FROM'], $this->query['WHERE'], $this->query['GROUPBY'], $this->query['ORDERBY'], $this->query['LIMIT']);
+		if ($unbufferedQuery) {
+			$this->result = mysql_unbuffered_query($query, $this->DB->link);
+		} else {
+			$this->result = mysql_query($query, $this->DB->link);
+		}
+//		$this->result = $this->DB->exec_SELECT_queryArray($this->query);
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugQuery']) {
 			if ($this->result) {
-				t3lib_div::devLog('Query executed successfully', 'kb_display', -1, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
+				t3lib_div::devLog('Query executed successfully', 'kb_display', -1, array($this->DB->debug_lastBuiltQuery));
 			} else {
-				t3lib_div::devLog('Query failed', 'kb_display', 3, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
+				t3lib_div::devLog('Query failed', 'kb_display', 3, array($this->DB->debug_lastBuiltQuery));
 			}
 		}
 		return $this->result?true:false;
@@ -492,6 +506,23 @@ class tx_kbdisplay_queryGenerator {
 	public function get_queryResult() {
 		return $this->result;
 	}
+
+	/**
+	 * This method fetches a single result row and returns it
+	 *
+	 * @return	mixed			Either the fetched result row array, or false in case of error
+	 */
+	function fetchRow() {
+		// TODO: Proper error handling
+		if ($this->result) {
+			return $this->DB->sql_fetch_assoc($this->result);
+		} else {
+//			$this->addError('ERROR', 'No query result available !');
+			die('ERROR: No query result available !');
+			return false;
+		}
+	}
+
 
 	/**
 	 * Returns joining information about how to combine/merge result rows

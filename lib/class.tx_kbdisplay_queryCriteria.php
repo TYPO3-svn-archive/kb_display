@@ -138,7 +138,9 @@ class tx_kbdisplay_queryCriteria {
 		if (is_array($this->criterias_flexFormData)) {
 			foreach ($this->criterias_flexFormData as $filter) {
 				$this->set_filterValue($filter);
-				$this->fetch_filterOptions($filter);
+				if (!$this->useConfig['dontFetchFilterOptions']) {
+					$this->fetch_filterOptions($filter);
+				}
 			}
 		}
 	}

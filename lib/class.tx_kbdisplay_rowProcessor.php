@@ -63,15 +63,12 @@ class tx_kbdisplay_rowProcessor {
 	 * @return	void
 	 */
 	public function transformResult() {
-		$this->resultData = $this->queryFetcher->get_resultData();
-
-		// Retrieve keys after which to combine rows from queryController / queryGenerator
-		$this->aquireJoinKeys();
+		$tmp_resultData = $this->queryFetcher->get_resultData();
 
 		// Transform rows according to TS-rules - perform separation in sub-array depening on table
 		$resultRows = array();
-		if (is_array($this->resultData)) {
-			foreach ($this->resultData as $idx => $dataArray) {
+		if (is_array($tmp_resultData)) {
+			foreach ($tmp_resultData as $idx => $dataArray) {
 				$tmpRow = $this->transformRow($dataArray);
 				if ($tmpRow) {
 					$resultRows[] = $tmpRow;
@@ -170,16 +167,11 @@ class tx_kbdisplay_rowProcessor {
 	 *
 	 * @return	void
 	 */
-	private function transformRow($data) {
-		$this->row_cObj = clone($this->cObj);
+	public function transformRow($data) {
+		$this->row_cObj = $this->cObj;
 
 		// Separate fields into subarrays depending on their tableIndex
 		$data = $this->separateFields($data);
-
-		// Set key "mainTable" as reference to table being queried
-		$keys = array_keys($data);
-		$firstKey = $keys[0];
-		$data['mainTable'] = &$data[$firstKey];
 
 		// Initialize cObject with transformed data
 		$this->row_cObj->start($data);
@@ -190,6 +182,11 @@ class tx_kbdisplay_rowProcessor {
 
 		// process fields according to TypoScript-Setup
 		$data = $this->processFields($data);
+
+		// Set key "mainTable" as reference to table being queried
+		$keys = array_keys($data);
+		$firstKey = $keys[0];
+		$data['mainTable'] = &$data[$firstKey];
 
 		return $data;
 	}
@@ -230,22 +227,27 @@ class tx_kbdisplay_rowProcessor {
 			$config = $this->useConfig['itemList.']['cObjects.'];
 		}
 		$result = array();
+// $timing['start'] = microtime(true);
 		if (is_array($config) && count($config)) {
-			$this->row_cObj = clone($this->cObj);
+			$this->row_cObj = $this->cObj;
 			if ($dataArray) {
 				$this->row_cObj->start($dataArray);
 			}
-			$this->row_cObj->data['caller'] = &$this;
+			$this->row_cObj->caller = &$this;
 			foreach ($config as $key => $subConfig) {
 				if (substr($key, -1)!=='.') {
+
 					$result[$key] = $this->row_cObj->cObjGetSingle($config[$key], $config[$key.'.']);
+// $timing['cObj_'.$key] = microtime(true);
 				}
 			}
 		}
+// $timing['finish'] = microtime(true);
+// storeTiming($timing, 'cObjects');
 		return $result;
 	}
 
-	private function aquireJoinKeys() {
+	public function aquireJoinKeys() {
 		// Get all table indexes from query controller
 		$tableIndexes = $this->queryController->get_tableIndexes();
 		foreach ($tableIndexes as $tableIndex) {
@@ -271,6 +273,8 @@ class tx_kbdisplay_rowProcessor {
 				}
 			}
 		}
+		return (is_array($this->rowProcessor->joinKeys) && count($this->rowProcessor->joinKeys)) ? true : false;
+	
 	}
 
 	private function separateFields($data) {

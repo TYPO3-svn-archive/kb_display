@@ -25,6 +25,7 @@
 
 require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
 require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryTable.php');
+require_once(PATH_kb_display.'class.tx_kbdisplay_db.php');
 
 
 /**
@@ -353,13 +354,13 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 *
 	 * @return	void
 	 */
-	public function queryExecute($resultCount = false, $onlyUids = false) {
+	public function queryExecute($resultCount = false, $onlyUids = false, $unbufferedQuery = false) {
 		// QUERY GENERATOR:
 		// Let the query generator prepare the query
 		$this->queryGenerator->queryPrepare(false, $resultCount, $onlyUids);
 		// Let the query get executed
 		if (!$this->isSearch || $this->searchWords) {
-			$this->queryGenerator->queryExecute();
+			$this->queryGenerator->queryExecute($unbufferedQuery);
 		}
 	}
 
@@ -368,29 +369,57 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 *
 	 * @return	void
 	 */
-	public function fetchResult($makeSubQueries = true, $clearFetcher = false) {
+	public function fetchResult($makeSubQueries = true, $clearFetcher = false, $handleTransformations = false) {
 		// Let the query fetcher object instance retrieve all result rows from database
 		if (!$this->isSearch || $this->searchWords) {
-			$this->queryFetcher->fetchResult($clearFetcher);
-			if ($makeSubQueries && is_array($this->sub_queryGenerators) && count($this->sub_queryGenerators)) {
-				$tmp_resultData = &$this->queryFetcher->get_resultData();
+			if ($handleTransformations) {
+				$this->queryFetcher->setRowProcessor($this->rowProcessor);
+			}
+			$reallyMakeSubQueries = $makeSubQueries && is_array($this->sub_queryGenerators) && count($this->sub_queryGenerators);
+			$this->queryFetcher->fetchResult($clearFetcher, $handleTransformations, $reallyMakeSubQueries ? array($this, 'fetchSubResults') : false);
+			if ($reallyMakeSubQueries && !$handleTransformations) {
+					// If transformations are already handled by the queryFetcher then the sub queries
+					// will also be retrieved there.
+				$tmp_resultData = $this->queryFetcher->get_resultData();
 				if (is_array($tmp_resultData)) {
-					foreach ($this->sub_queryGenerators as $queryIdx => &$queryGenerator) {
-						foreach ($tmp_resultData as $resIdx => $resultRow) {
-								// Create cloned objects for sub-queries
-							$tmp_queryGenerator = clone($queryGenerator);
-							$tmp_queryFetcher = t3lib_div::makeInstance('tx_kbdisplay_queryFetcher');
-							$tmp_queryFetcher->init($tmp_queryGenerator, $this);
-								// Prepare and execute sub-query
-							$tmp_queryGenerator->queryPrepare($resultRow);
-							$tmp_result = $tmp_queryGenerator->queryExecute();
-							$tmp_queryFetcher->fetchResult();
-							$this->queryFetcher->insertSubResult($resIdx, $tmp_queryFetcher);
-						}
+					foreach ($tmp_resultData as $resIdx => $resultRow) {
+						$this->fetchSubResults($resultRow, $resIdx);
 					}
 				}
 			}
 		}
+	}
+
+	public function fetchSubResults($resultRow, $resIdx) {
+// $timing['start'] = microtime(true);
+		foreach ($this->sub_queryGenerators as $queryIdx => $queryGenerator) {
+				// Create cloned objects for sub-queries
+			$tmp_queryFetcher = t3lib_div::makeInstance('tx_kbdisplay_queryFetcher');
+			$tmp_queryFetcher->init($queryGenerator, $this->rootObj);
+// $timing['generatorInit_'.$queryIdx] = microtime(true);
+				// Prepare and execute sub-query
+			$queryGenerator->queryPrepare($resultRow);
+// $timing['queryPrepare_'.$queryIdx] = microtime(true);
+// $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugQuery'] = 2;
+			$queryGenerator->queryExecute();
+// echo $queryGenerator->
+// $timing['queryExecute_'.$queryIdx] = microtime(true);
+			$tmp_queryFetcher->fetchResult();
+// $timing['queryFetch_'.$queryIdx] = microtime(true);
+			$this->queryFetcher->insertSubResult($resIdx, $tmp_queryFetcher);
+// $timing['insertSubResult_'.$queryIdx] = microtime(true);
+		}
+// $timing['finish'] = microtime(true);
+// storeTiming($timing, 'fetchSub');
+	}
+
+	/**
+	 * Prepares combining of result rows.
+	 *
+	 * @return	boolean		returns false if there is no need to combine result rows
+	 */
+	public function prepareCombine() {
+		return $this->rowProcessor->aquireJoinKeys();
 	}
 
 	/**
@@ -423,11 +452,11 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 */
 	public function initObject_queryGenerator($idx = 0) {
 		$queryGenerator = t3lib_div::makeInstance('tx_kbdisplay_queryGenerator');
-		$queryGenerator->init($this, $this->rootObj);
+		$queryGenerator->init($this, $this->rootObj, ($idx ? true : false));
 		if ($idx) {
-			$this->sub_queryGenerators[$idx] = &$queryGenerator;
+			$this->sub_queryGenerators[$idx] = $queryGenerator;
 		} else {
-			$this->queryGenerator = &$queryGenerator;
+			$this->queryGenerator = $queryGenerator;
 		}
 	}
 

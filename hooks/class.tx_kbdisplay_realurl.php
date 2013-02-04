@@ -63,7 +63,7 @@ class tx_kbdisplay_realurl {
 					if (is_array($localGET) && !count($localGET) && is_array($tempGET) && count($tempGET)) {
 						// Only valid values have been in the GET vars. Force cHash
 						$cHash_array = t3lib_div::cHashParams(t3lib_div::implodeArrayForUrl('', $tempGET));
-						$cHash_calc = t3lib_div::shortMD5(serialize($cHash_array));
+						$cHash_calc = t3lib_div::calculateCHash($cHash_array);
 						$GLOBALS['TSFE']->cHash = $_GET['cHash'] = $cHash_calc;
 					}
 				}

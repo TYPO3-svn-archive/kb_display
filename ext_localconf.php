@@ -25,5 +25,17 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$_EXTKEY]['debugQuery'] = intval($_EXTCON
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$_EXTKEY]['debugFilterQuery'] = intval($_EXTCONF['debugFilterQuery']);
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$_EXTKEY]['debugDynamicFlexforms'] = intval($_EXTCONF['debugDynamicFlexforms']);
 
+	function storeTiming($timing, $filename = 'time', $debug = array()) {
+		$current = array_shift($timing);
+		$result = array();
+		foreach ($timing as $func => $time) {
+			$result[$func] = $time - $current;
+			$current = $time;
+		}
+		$fd = fopen(PATH_site.'fileadmin/'.$filename.'.log', 'ab');
+		fwrite($fd, "\nLogging timing:\n".print_r($result, true)."\n".print_r($debug, true)."\n\n");
+		fclose($fd);
+	}
+
 ?>
 
