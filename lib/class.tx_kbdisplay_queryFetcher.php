@@ -112,7 +112,7 @@ $timing['subQuery_'.$cnt] = microtime(true);
 				$this->resultData[$cnt] = $this->rowProcessor->transformRow($this->resultData[$cnt]);
 $timing['transform_'.$cnt] = microtime(true);
 					// Retrieve cObjects for this row
-				$cObjects = $this->rowProcessor->get_cObjects($this->resultData[$cnt]);
+				$cObjects = $this->rowProcessor->get_cObjects($this->resultData[$cnt], false, $cnt);
 $timing['cObjects_'.$cnt] = microtime(true);
 				if (is_array($cObjects) && count($cObjects)) {
 					$this->resultData[$cnt]['cObjects'] = $cObjects;

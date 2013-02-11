@@ -1,3 +1,6 @@
+2013-02-11  Bernhard Kraft  <kraftb@think-open.at>
+	* Added a few missing changes regarding unbuffered queries (The changes were made at the live-version but for some reason not commited to SVN)
+
 2013-01-31  Bernhard Kraft  <kraftb@think-open.at>
 	* Added a class which extends t3lib_DB so it creates a new connection (required for asynchrous queries
 	* Fixed realURL cHash calculation. Now uses t3lib_div::calculateCHash instead of t3lib_div::shortMD5

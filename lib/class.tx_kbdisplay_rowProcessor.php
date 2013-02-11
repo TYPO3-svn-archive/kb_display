@@ -83,7 +83,7 @@ class tx_kbdisplay_rowProcessor {
 
 		if (is_array($this->useConfig['itemList.']['cObjects.']) && count($this->useConfig['itemList.']['cObjects.'])) {
 			foreach ($resultRows as $idx => $dataArray) {
-				$cObjects = $this->get_cObjects($dataArray);
+				$cObjects = $this->get_cObjects($dataArray, false, $idx);
 				if (is_array($cObjects) && count($cObjects)) {
 					$resultRows[$idx]['cObjects'] = $cObjects;
 				}
@@ -222,9 +222,12 @@ class tx_kbdisplay_rowProcessor {
 		return $data;
 	}
 
-	public function get_cObjects($dataArray = false, $config = false) {
+	public function get_cObjects($dataArray = false, $config = false, $index = false) {
 		if (!$config) {
 			$config = $this->useConfig['itemList.']['cObjects.'];
+			if ($this->useConfig['itemList.'][$index.'.']['cObjects.']) {
+				$config = t3lib_div::array_merge_recursive_overrule($config, $this->useConfig['itemList.'][$index.'.']['cObjects.']);
+			}
 		}
 		$result = array();
 // $timing['start'] = microtime(true);
