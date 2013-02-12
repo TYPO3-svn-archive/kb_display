@@ -130,6 +130,7 @@ class tx_kbdisplay_queryTable {
 		}
 
 		$this->resultName = $this->table_flexFormData['field_resultname'];
+		$this->limit = intval($this->table_flexFormData['field_limit']);
 		$this->joinType = $this->table_flexFormData['field_jointype'];
 		$this->isSearch = $isSearch;
 		if ($index && $isSearch) {
@@ -236,6 +237,9 @@ class tx_kbdisplay_queryTable {
 		$this->obj_groupBy->setQuery_groupBy($idx);
 
 		$this->queryGenerator->set_enableFields($idx, $this->enableFields);
+		if ($this->limit) {
+			$this->queryGenerator->set_limit($this->limit);
+		}
 		$this->getFields();
 		$this->queryGenerator->set_fields($this->fields, $idx);
 	}

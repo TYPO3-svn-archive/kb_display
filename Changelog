@@ -1,5 +1,6 @@
 2013-02-12  Bernhard Kraft  <kraftb@think-open.at>
 	* Fixed the "string" compare type: It didn't compare against the "other" field. Only plain-text value compares were possible.
+	* Added a Flexform field which allows to configure the number of rows (limit) retrieved for "Additional query" tables
 
 2013-02-11  Bernhard Kraft  <kraftb@think-open.at>
 	* Added a few missing changes regarding unbuffered queries (The changes were made at the live-version but for some reason not commited to SVN)

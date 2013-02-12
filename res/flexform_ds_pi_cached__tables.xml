@@ -72,6 +72,22 @@
 									</config>
 								</TCEforms>
 							</field_resultname>
+							<field_limit>
+								<TCEforms>
+									<exclude>1</exclude>
+									<label>LLL:EXT:kb_display/locallang.xml:pi_cached_tables__list_tables__item_table__limit</label>
+									<config>
+										<type>input</type>
+										<size>10</size>
+										<eval>int</eval>
+										<range>
+											<lower>0</lower>
+											<upper>100000</upper>
+										</range>
+										<default>0</default>
+									</config>
+								</TCEforms>
+							</field_limit>
 							<field_criteriaConnector>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteriaConnector_tpl.xml</field_criteriaConnector>
 							<list_criteria_section>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__criteria_tpl.xml</list_criteria_section>
 							<field_groupBy_fields>includeXML:EXT:kb_display/res/flexform_ds_pi_cached__groupBy_tpl.xml</field_groupBy_fields>

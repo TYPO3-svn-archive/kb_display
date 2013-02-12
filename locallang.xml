@@ -42,6 +42,7 @@
 			<label index="pi_cached_tables__list_tables__item_table__jointype_leftjoin">Left join</label>
 			<label index="pi_cached_tables__list_tables__item_table__jointype_query">Additional query</label>
 			<label index="pi_cached_tables__list_tables__item_table__combineResult">Combine result rows</label>
+			<label index="pi_cached_tables__list_tables__item_table__limit">Max. number of rows</label>
 
 			<label index="pi_cached_tables__list_tables__item_table__resultname">Result name</label>
 
