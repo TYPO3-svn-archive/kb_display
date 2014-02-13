@@ -6,6 +6,11 @@
 		<config>
 			<type>check</type>
 		</config>
-		<displayCond>FIELD:field_compare_usersel:REQ:false &amp;&amp; FIELD:field_compare_field,0,-5:!IN:cruser_id,deleted,hidden,fe_group,category</displayCond>
+		<displayCond>
+			<and>
+				<item index="1" type="array">FIELD:field_compare_usersel:REQ:false</item>
+				<item index="2" type="array">FIELD:field_compare_field,0,-5:!IN:cruser_id,deleted,hidden,fe_group,category,dummy</item>
+			</and>
+		</displayCond>
 	</TCEforms>
 </T3DataStructure>

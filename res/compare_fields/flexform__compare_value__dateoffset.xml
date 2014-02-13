@@ -8,6 +8,11 @@
 			<size>10</size>
 			<eval>int</eval>
 		</config>
-		<displayCond>FIELD:field_compare_field,0,-5:IN:crdate,tstamp,starttime,endtime &amp;&amp; FIELD:field_compare_date:!IN:smaller,bigger,equals</displayCond>
+		<displayCond>
+			<and>
+				<item index="1" type="array">FIELD:field_compare_field,0,-5:IN:crdate,tstamp,starttime,endtime,dummy</item>
+				<item index="2" type="array">FIELD:field_compare_date:!IN:smaller,bigger,equals</item>
+			</and>
+		</displayCond>
 	</TCEforms>
 </T3DataStructure>

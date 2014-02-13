@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Hooks\ContentObject;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2010-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,22 +24,39 @@
 ***************************************************************/
 
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \thinkopen_at\kbDisplay\SmartyUtil;;
 
-class tx_kbdisplay_smarty {
+/**
+ * Content object "SMARTY" implementation
+ *
+ * @author Bernhard Kraft <kraftb@think-open.at>
+ * @package TYPO3
+ * @subpackage kb_display
+ */
+class Smarty {
 	var $smarty_cache = false;
 	var $smarty_compileDir= 'typo3temp/smarty_compile';
 	var $smarty_cacheDir= 'typo3temp/smarty_cache';
 
 
-	public function cObjGetSingleExt($name, $conf, $TSkey, &$parentObj) {
-		$this->smarty = tx_smarty::smarty();
+	/*
+	 * Renders the SMARTY cObject
+	 *
+	 * @param string $name: Should be "SMARTY"
+	 * @param array $conf: The TypoScript configuration for this content object
+	 * @param string $TSkey: Path to the currently rendered TS object
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObj: A pointer to the parent content object renderer
+	 */
+	public function cObjGetSingleExt($name, array $conf, $TSkey, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer &$parentObj) {
+		$this->smarty = SmartyUtil::getInstance();
 		$this->smarty->setSmartyVar('caching', $this->cacheSmarty);
 		$this->smarty->setSmartyVar('compile_dir', $this->smarty_compileDir);
 		$this->smarty->setSmartyVar('cache_dir', $this->smarty_cacheDir);
 		$content = '';
 
 		$template = $parentObj->stdWrap($conf['template'], $conf['template.']);
-		$templateFile = t3lib_div::getFileAbsFileName($template);
+		$templateFile = GeneralUtility::getFileAbsFileName($template);
 		if (file_exists($templateFile) && is_readable($templateFile)) {
 			if ($conf['setData']) {
 				$this->smarty->assign('data', $parentObj->data);
@@ -51,9 +69,3 @@ class tx_kbdisplay_smarty {
 	}
 
 }
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_smarty.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_smarty.php']);
-}
-
-?>

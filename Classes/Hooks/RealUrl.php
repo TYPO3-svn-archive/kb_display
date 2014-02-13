@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Hooks;
 /***************************************************************
 *  Copyright notice
 *  
-*  (c) 2008-2010 Bernhard Kraft (kraftb@think-open.at)
+*  (c) 2008-2014 Bernhard Kraft (kraftb@think-open.at)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is 
@@ -21,17 +22,19 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+
+
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /** 
  * Hook method for realurl extension
+ * @TODO: Describe what this hook is good for.
  *
- * @author	Bernhard Kraft <kraftb@think-open.at>
+ * @author Bernhard Kraft <kraftb@think-open.at>
+ * @package TYPO3
+ * @subpackage kb_display
  */
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- */
-
-
-class tx_kbdisplay_realurl {
+class RealUrl {
 
 	function override_cHash(&$params, &$parentObj) {
 		$cHash_set = false;
@@ -62,8 +65,8 @@ class tx_kbdisplay_realurl {
 				if ($cHash_set) {
 					if (is_array($localGET) && !count($localGET) && is_array($tempGET) && count($tempGET)) {
 						// Only valid values have been in the GET vars. Force cHash
-						$cHash_array = t3lib_div::cHashParams(t3lib_div::implodeArrayForUrl('', $tempGET));
-						$cHash_calc = t3lib_div::calculateCHash($cHash_array);
+						$cHash_array = GeneralUtility::cHashParams(t3lib_div::implodeArrayForUrl('', $tempGET));
+						$cHash_calc = GeneralUtility::calculateCHash($cHash_array);
 						$GLOBALS['TSFE']->cHash = $_GET['cHash'] = $cHash_calc;
 					}
 				}
@@ -72,9 +75,3 @@ class tx_kbdisplay_realurl {
 	}
 
 }
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_realurl.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_realurl.php']);
-}
-
-?>

@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Processing;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,6 +24,9 @@
 ***************************************************************/
 
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\MathUtility;
+
 /**
  * Class for fetching and processing the query results
  *
@@ -30,7 +34,7 @@
  * @package	TYPO3
  * @subpackage	kb_display
  */
-class tx_kbdisplay_rowProcessor {
+class RowProcessor {
 	private $parentObj = NULL;
 	private $rootObj = NULL;
 	private $queryFetcher = NULL;
@@ -63,12 +67,15 @@ class tx_kbdisplay_rowProcessor {
 	 * @return	void
 	 */
 	public function transformResult() {
-		$tmp_resultData = $this->queryFetcher->get_resultData();
+		$this->resultData = $this->queryFetcher->get_resultData();
+
+		// Retrieve keys after which to combine rows from queryController / queryGenerator
+		$this->aquireJoinKeys();
 
 		// Transform rows according to TS-rules - perform separation in sub-array depening on table
 		$resultRows = array();
-		if (is_array($tmp_resultData)) {
-			foreach ($tmp_resultData as $idx => $dataArray) {
+		if (is_array($this->resultData)) {
+			foreach ($this->resultData as $idx => $dataArray) {
 				$tmpRow = $this->transformRow($dataArray);
 				if ($tmpRow) {
 					$resultRows[] = $tmpRow;
@@ -167,11 +174,16 @@ class tx_kbdisplay_rowProcessor {
 	 *
 	 * @return	void
 	 */
-	public function transformRow($data) {
-		$this->row_cObj = $this->cObj;
+	private function transformRow($data) {
+		$this->row_cObj = clone($this->cObj);
 
 		// Separate fields into subarrays depending on their tableIndex
 		$data = $this->separateFields($data);
+
+		// Set key "mainTable" as reference to table being queried
+		$keys = array_keys($data);
+		$firstKey = $keys[0];
+		$data['mainTable'] = &$data[$firstKey];
 
 		// Initialize cObject with transformed data
 		$this->row_cObj->start($data);
@@ -182,11 +194,6 @@ class tx_kbdisplay_rowProcessor {
 
 		// process fields according to TypoScript-Setup
 		$data = $this->processFields($data);
-
-		// Set key "mainTable" as reference to table being queried
-		$keys = array_keys($data);
-		$firstKey = $keys[0];
-		$data['mainTable'] = &$data[$firstKey];
 
 		return $data;
 	}
@@ -226,31 +233,26 @@ class tx_kbdisplay_rowProcessor {
 		if (!$config) {
 			$config = $this->useConfig['itemList.']['cObjects.'];
 			if ($this->useConfig['itemList.'][$index.'.']['cObjects.']) {
-				$config = t3lib_div::array_merge_recursive_overrule($config, $this->useConfig['itemList.'][$index.'.']['cObjects.']);
+				$config = GeneralUtility::array_merge_recursive_overrule($config, $this->useConfig['itemList.'][$index.'.']['cObjects.']);
 			}
 		}
 		$result = array();
-// $timing['start'] = microtime(true);
 		if (is_array($config) && count($config)) {
-			$this->row_cObj = $this->cObj;
+			$this->row_cObj = clone($this->cObj);
 			if ($dataArray) {
 				$this->row_cObj->start($dataArray);
 			}
-			$this->row_cObj->caller = &$this;
+			$this->row_cObj->data['caller'] = $this;
 			foreach ($config as $key => $subConfig) {
 				if (substr($key, -1)!=='.') {
-
 					$result[$key] = $this->row_cObj->cObjGetSingle($config[$key], $config[$key.'.']);
-// $timing['cObj_'.$key] = microtime(true);
 				}
 			}
 		}
-// $timing['finish'] = microtime(true);
-// storeTiming($timing, 'cObjects');
 		return $result;
 	}
 
-	public function aquireJoinKeys() {
+	protected function aquireJoinKeys() {
 		// Get all table indexes from query controller
 		$tableIndexes = $this->queryController->get_tableIndexes();
 		foreach ($tableIndexes as $tableIndex) {
@@ -276,8 +278,7 @@ class tx_kbdisplay_rowProcessor {
 				}
 			}
 		}
-		return (is_array($this->rowProcessor->joinKeys) && count($this->rowProcessor->joinKeys)) ? true : false;
-	
+		return (is_array($this->joinKeys) && count($this->joinKeys)) ? true : false;
 	}
 
 	private function separateFields($data) {
@@ -376,7 +377,7 @@ class tx_kbdisplay_rowProcessor {
 				$result = array();
 				foreach ($config as $key => $subconf) {
 					$key = preg_replace('/\.$/', '', $key);
-					if (t3lib_div::testInt($key) && is_array($subconf)) {
+					if (MathUtility::canBeInterpretedAsInteger($key) && is_array($subconf)) {
 						$result[] = $this->processField($table, $field, $value, $subconf);
 					}
 				}
@@ -394,10 +395,3 @@ class tx_kbdisplay_rowProcessor {
 
 
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_rowProcessor.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_rowProcessor.php']);
-}
-
-?>

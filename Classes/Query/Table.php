@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Query;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2012 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,9 +24,7 @@
 ***************************************************************/
 
 
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryCriteria.php');
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryOrderBy.php');
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryGroupBy.php');
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class for handling of each flexform table definition
@@ -34,7 +33,7 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryGroupBy.php');
  * @package	TYPO3
  * @subpackage	tx_display
  */
-class tx_kbdisplay_queryTable {
+class Table {
 	private $parentObj = null;
 	private $rootObj = null;
 	private $queryGenerator = null;
@@ -70,11 +69,11 @@ class tx_kbdisplay_queryTable {
 	public function init(&$parentObj, &$rootObj) {
 		$this->parentObj = &$parentObj;
 		$this->rootObj = &$rootObj;
-		$this->criteriaObj = t3lib_div::makeInstance('tx_kbdisplay_queryCriteria');
-		$this->filtersObj = t3lib_div::makeInstance('tx_kbdisplay_queryCriteria');
-		$this->searchObj = t3lib_div::makeInstance('tx_kbdisplay_queryCriteria');
-		$this->obj_orderBy = t3lib_div::makeInstance('tx_kbdisplay_queryOrderBy');
-		$this->obj_groupBy = t3lib_div::makeInstance('tx_kbdisplay_queryGroupBy');
+		$this->criteriaObj = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Criteria');
+		$this->filtersObj = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Criteria');
+		$this->searchObj = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Criteria');
+		$this->obj_orderBy = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\OrderBy');
+		$this->obj_groupBy = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\GroupBy');
 	}
 
 	/**
@@ -94,7 +93,6 @@ class tx_kbdisplay_queryTable {
 	 */
 	public function setup($index, $isSearch = false) {
 		$this->table = $this->table_flexFormData['field_table'];
-		t3lib_div::loadTCA($this->table);
 		$this->tableIndex = $index;
 
 			// Set the "this->enableFields" array to contain proper WHERE strings
@@ -171,7 +169,7 @@ class tx_kbdisplay_queryTable {
 	 * @see enableFields()
 	 */
 	protected function getMultipleGroupsWhereClause($field, $table) {
-		$memberGroups = t3lib_div::intExplode(',',$GLOBALS['TSFE']->gr_list);
+		$memberGroups = GeneralUtility::intExplode(',',$GLOBALS['TSFE']->gr_list);
 		$orChecks=array();
 		$orChecks[]=$field.'=\'\'';	// If the field is empty, then OK
 		$orChecks[]=$field.' IS NULL';	// If the field is NULL, then OK
@@ -328,7 +326,7 @@ class tx_kbdisplay_queryTable {
 	 * @return	void
 	 */
 	public function initObject_queryGenerator() {
-		$this->queryGenerator = t3lib_div::makeInstance('tx_kbdisplay_queryGenerator');
+		$this->queryGenerator = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Generator');
 		$this->queryGenerator->init($this, $this->rootObj);
 	}
 
@@ -346,10 +344,3 @@ class tx_kbdisplay_queryTable {
 	}
 
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryTable.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryTable.php']);
-}
-
-?>

@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Hooks\ContentObject;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2010-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,11 +24,27 @@
 ***************************************************************/
 
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Utility\MathUtility;
 
-class tx_kbdisplay_content_ext {
+/**
+ * Class for content object "EXT_CONTENT"
+ *
+ * @author Bernhard Kraft <kraftb@think-open.at>
+ * @package TYPO3
+ * @subpackage kb_display
+ */
+class ExtContent {
 
-
-	public function cObjGetSingleExt($name, $conf, $TSkey, &$parentObj) {
+	/*
+	 * Renders the extended CONTENT cObject
+	 *
+	 * @param string $name: Should be "EXT_CONTENT"
+	 * @param array $conf: The TypoScript configuration for this content object
+	 * @param string $TSkey: Path to the currently rendered TS object
+	 * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObj: A pointer to the parent content object renderer
+	 */
+	public function cObjGetSingleExt($name, array $conf, $TSkey, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer &$parentObj) {
 		$theValue='';
 		$this->parentObj = &$parentObj;
 
@@ -55,7 +72,7 @@ class tx_kbdisplay_content_ext {
 				} else {
 					$parentObj->currentRecordTotal = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
 					$GLOBALS['TT']->setTSlogMessage('NUMROWS: '.$GLOBALS['TYPO3_DB']->sql_num_rows($res));
-					$cObj =t3lib_div::makeInstance('tslib_cObj');
+					$cObj = GeneralUtility::makeInstance('tslib_cObj');
 					$cObj->setParent($parentObj->data,$parentObj->currentRecord);
 					$parentObj->currentRecordNumber=0;
 					$cobjValue = '';
@@ -143,8 +160,8 @@ class tx_kbdisplay_content_ext {
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			}
 			if (!$error)	{
-				$conf['begin'] = t3lib_div::intInRange(ceil($this->parentObj->calc($conf['begin'])),0);
-				$conf['max'] = t3lib_div::intInRange(ceil($this->parentObj->calc($conf['max'])),0);
+				$conf['begin'] = MathUtility::forceIntegerInRange(ceil($this->parentObj->calc($conf['begin'])),0);
+				$conf['max'] = MathUtility::forceIntegerInRange(ceil($this->parentObj->calc($conf['max'])),0);
 				if ($conf['begin'] && !$conf['max'])	{
 					$conf['max'] = 100000;
 				}
@@ -199,7 +216,7 @@ class tx_kbdisplay_content_ext {
 		);
 
 		if (trim($conf['uidInList']))	{
-			$listArr = t3lib_div::intExplode(',',str_replace('this',$GLOBALS['TSFE']->contentPid,$conf['uidInList']));  // str_replace instead of ereg_replace 020800
+			$listArr = GeneralUtility::intExplode(',',str_replace('this',$GLOBALS['TSFE']->contentPid,$conf['uidInList']));  // str_replace instead of ereg_replace 020800
 			if (count($listArr)==1)	{
 				$query.=' AND '.$table.'.uid='.intval($listArr[0]);
 			} else {
@@ -208,7 +225,7 @@ class tx_kbdisplay_content_ext {
 			$pid_uid_flag++;
 		}
 		if (trim($conf['pidInList']))	{
-			$listArr = t3lib_div::intExplode(',',str_replace('this',$GLOBALS['TSFE']->contentPid,$conf['pidInList']));	// str_replace instead of ereg_replace 020800
+			$listArr = GeneralUtility::intExplode(',',str_replace('this',$GLOBALS['TSFE']->contentPid,$conf['pidInList']));	// str_replace instead of ereg_replace 020800
 				// removes all pages which are not visible for the user!
 			$listArr = $this->checkPidArray($listArr);
 			if (count($listArr))	{
@@ -292,9 +309,3 @@ class tx_kbdisplay_content_ext {
 	}
 
 }
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_content_ext.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_content_ext.php']);
-}
-
-?>

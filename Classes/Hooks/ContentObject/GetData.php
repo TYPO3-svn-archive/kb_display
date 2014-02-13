@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Hooks\ContentObject;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,9 +24,16 @@
 ***************************************************************/
 
 
-require_once(PATH_tslib.'interfaces/interface.tslib_content_getdatahook.php');
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class tx_kbdisplay_getData implements tslib_content_getDataHook {
+/**
+ * Hook for the "getData" method of the ContentObjectRenderer
+ *
+ * @author Bernhard Kraft <kraftb@think-open.at>
+ * @package TYPO3
+ * @subpackage kb_display
+ */
+class GetData implements \TYPO3\CMS\Frontend\ContentObject\ContentObjectGetDataHookInterface {
 
 	/**
 	 * Extends the getData()-Method of tslib_cObj to process more/other commands
@@ -37,7 +45,7 @@ class tx_kbdisplay_getData implements tslib_content_getDataHook {
 	 * @param	tslib_cObj	parent content object
 	 * @return	string		get data result
 	 */
-	public function getDataExtension($getDataString, array $fields, $sectionValue, $returnValue, tslib_cObj &$parentObject) {
+	public function getDataExtension($getDataString, array $fields, $sectionValue, $returnValue, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer &$parentObject) {
 		$parts = explode(':', $sectionValue, 2);
 		$key = trim($parts[1]);
 		if ((string)$key!='') {
@@ -65,7 +73,7 @@ class tx_kbdisplay_getData implements tslib_content_getDataHook {
 				case 'getvar':
 					list($firstKey, $rest) = explode('|', $key, 2);
 					if (strlen(trim($firstKey))) {
-						$returnValue = t3lib_div::_GET(trim($firstKey));
+						$returnValue = GeneralUtility::_GET(trim($firstKey));
 							// Look for deeper levels:
 						if (strlen(trim($rest))) {
 							$returnValue = is_array($returnValue) ? $parentObject->getGlobal($rest, $returnValue) : '';
@@ -79,7 +87,7 @@ class tx_kbdisplay_getData implements tslib_content_getDataHook {
 				case 'postvar':
 					list($firstKey, $rest) = explode('|', $key, 2);
 					if (strlen(trim($firstKey))) {
-						$returnValue = t3lib_div::_POST(trim($firstKey));
+						$returnValue = GeneralUtility::_POST(trim($firstKey));
 							// Look for deeper levels:
 						if (strlen(trim($rest))) {
 							$returnValue = is_array($returnValue) ? $parentObject->getGlobal($rest, $returnValue) : '';
@@ -95,12 +103,4 @@ class tx_kbdisplay_getData implements tslib_content_getDataHook {
 		return $returnValue;
 	}
 
-
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_getData.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_getData.php']);
-}
-
-?>

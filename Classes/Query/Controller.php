@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Query;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,10 +24,7 @@
 ***************************************************************/
 
 
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_queryTable.php');
-require_once(PATH_kb_display.'class.tx_kbdisplay_db.php');
-
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Controller class for the process of query generating
@@ -35,7 +33,7 @@ require_once(PATH_kb_display.'class.tx_kbdisplay_db.php');
  * @package	TYPO3
  * @subpackage	kb_display
  */
-class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
+class Controller extends \thinkopen_at\kbDisplay\Settings\FlexFieldParser {
 	private $parentObj = null;
 	private $rootObj = null;
 	private $queryGenerator = null;
@@ -115,7 +113,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		$criteriaConnector = $this->parentObj->pi_getFFvalue($this->flexData, 'field_criteriaConnector', 'sheet_criteria');
 		$filtersConnector = $this->parentObj->pi_getFFvalue($this->flexData, 'field_filtersConnector', 'sheet_filters');
 		$searchFields = $this->parentObj->pi_getFFvalue($this->flexData, 'field_search_fields', 'sheet_search');
-		$searchFields = t3lib_div::trimExplode(',', $searchFields, 1);
+		$searchFields = GeneralUtility::trimExplode(',', $searchFields, 1);
 		$fields_groupBy = $this->parentObj->pi_getFFvalue($this->flexData, 'field_groupBy_fields', 'sheet_groupBy');
 		$this->isSearch = ( is_array($searchFields) && count($searchFields) ) ? true : false;
 		if ($this->isSearch) {
@@ -221,7 +219,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 */
 	private function initObject_queryTables() {
 		$idx = count($this->tableObjects);
-		$obj = t3lib_div::makeInstance('tx_kbdisplay_queryTable');
+		$obj = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Table');
 		$obj->init($this, $this->rootObj);
 		$this->tableObjects[$idx] = &$obj;
 		return $idx;
@@ -290,7 +288,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 */
 	public function tables_process($subController = false) {
 		if (!$subController && $this->isSearch) {
-			$subQueryController = t3lib_div::makeInstance('tx_kbdisplay_queryController');
+			$subQueryController = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Controller');
 			$subQueryController->init($this->parentObj, $this->rootObj);
 			$subQueryController->parseFlexform();
 			$subQueryController->tables_main_transferData();
@@ -322,7 +320,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 */
 	public function get_tableName($idx) {
 		if (!is_object($this->tableObjects[$idx])) {
-			print_r(t3lib_div::debug_trail());
+			print_r(\TYPO3\CMS\Core\Utility\DebugUtility::debugTrail());
 		}
 		return $this->tableObjects[$idx]->get_tableName();
 	}
@@ -335,7 +333,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 */
 	public function get_resultName($idx = false) {
 		if (!is_object($this->tableObjects[$idx])) {
-			print_r(t3lib_div::debug_trail());
+			print_r(\TYPO3\CMS\Core\Utility\DebugUtility::debugTrail());
 		}
 		return $this->tableObjects[$idx]->get_resultName();
 	}
@@ -354,13 +352,13 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 *
 	 * @return	void
 	 */
-	public function queryExecute($resultCount = false, $onlyUids = false, $unbufferedQuery = false) {
+	public function queryExecute($resultCount = false, $onlyUids = false) {
 		// QUERY GENERATOR:
 		// Let the query generator prepare the query
 		$this->queryGenerator->queryPrepare(false, $resultCount, $onlyUids);
 		// Let the query get executed
 		if (!$this->isSearch || $this->searchWords) {
-			$this->queryGenerator->queryExecute($unbufferedQuery);
+			$this->queryGenerator->queryExecute();
 		}
 	}
 
@@ -369,18 +367,12 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 *
 	 * @return	void
 	 */
-	public function fetchResult($makeSubQueries = true, $clearFetcher = false, $handleTransformations = false) {
+	public function fetchResult($makeSubQueries = true, $clearFetcher = false) {
 		// Let the query fetcher object instance retrieve all result rows from database
 		if (!$this->isSearch || $this->searchWords) {
-			if ($handleTransformations) {
-				$this->queryFetcher->setRowProcessor($this->rowProcessor);
-			}
-			$reallyMakeSubQueries = $makeSubQueries && is_array($this->sub_queryGenerators) && count($this->sub_queryGenerators);
-			$this->queryFetcher->fetchResult($clearFetcher, $handleTransformations, $reallyMakeSubQueries ? array($this, 'fetchSubResults') : false);
-			if ($reallyMakeSubQueries && !$handleTransformations) {
-					// If transformations are already handled by the queryFetcher then the sub queries
-					// will also be retrieved there.
-				$tmp_resultData = $this->queryFetcher->get_resultData();
+			$this->queryFetcher->fetchResult($clearFetcher);
+			if ($makeSubQueries && is_array($this->sub_queryGenerators) && count($this->sub_queryGenerators)) {
+				$tmp_resultData = &$this->queryFetcher->get_resultData();
 				if (is_array($tmp_resultData)) {
 					foreach ($tmp_resultData as $resIdx => $resultRow) {
 						$this->fetchSubResults($resultRow, $resIdx);
@@ -390,36 +382,19 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 		}
 	}
 
-	public function fetchSubResults($resultRow, $resIdx) {
-// $timing['start'] = microtime(true);
+	protected function fetchSubResults($resultRow, $resIdx) {
 		foreach ($this->sub_queryGenerators as $queryIdx => $queryGenerator) {
-				// Create cloned objects for sub-queries
-			$tmp_queryFetcher = t3lib_div::makeInstance('tx_kbdisplay_queryFetcher');
-			$tmp_queryFetcher->init($queryGenerator, $this->rootObj);
-// $timing['generatorInit_'.$queryIdx] = microtime(true);
-				// Prepare and execute sub-query
-			$queryGenerator->queryPrepare($resultRow);
-// $timing['queryPrepare_'.$queryIdx] = microtime(true);
-// $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugQuery'] = 2;
-			$queryGenerator->queryExecute();
-// echo $queryGenerator->
-// $timing['queryExecute_'.$queryIdx] = microtime(true);
-			$tmp_queryFetcher->fetchResult();
-// $timing['queryFetch_'.$queryIdx] = microtime(true);
-			$this->queryFetcher->insertSubResult($resIdx, $tmp_queryFetcher);
-// $timing['insertSubResult_'.$queryIdx] = microtime(true);
-		}
-// $timing['finish'] = microtime(true);
-// storeTiming($timing, 'fetchSub');
-	}
+			// Create cloned objects for sub-queries
+			$tmp_queryGenerator = clone($queryGenerator);
 
-	/**
-	 * Prepares combining of result rows.
-	 *
-	 * @return	boolean		returns false if there is no need to combine result rows
-	 */
-	public function prepareCombine() {
-		return $this->rowProcessor->aquireJoinKeys();
+			$tmp_queryFetcher = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Fetcher');
+			$tmp_queryFetcher->init($tmp_queryGenerator, $this->rootObj);
+			// Prepare and execute sub-query
+			$tmp_queryGenerator->queryPrepare($resultRow);
+			$tmp_queryGenerator->queryExecute();
+			$tmp_queryFetcher->fetchResult();
+			$this->queryFetcher->insertSubResult($resIdx, $tmp_queryFetcher);
+		}
 	}
 
 	/**
@@ -451,8 +426,8 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 * @return	void
 	 */
 	public function initObject_queryGenerator($idx = 0) {
-		$queryGenerator = t3lib_div::makeInstance('tx_kbdisplay_queryGenerator');
-		$queryGenerator->init($this, $this->rootObj, ($idx ? true : false));
+		$queryGenerator = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Generator');
+		$queryGenerator->init($this, $this->rootObj);
 		if ($idx) {
 			$this->sub_queryGenerators[$idx] = $queryGenerator;
 		} else {
@@ -465,7 +440,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 *
 	 * @return	object		The current objects instance of "queryGenerator"
 	 */
-	public function &get_queryGenerator($idx = 0) {
+	public function get_queryGenerator($idx = 0) {
 		if ($idx) {
 			if (!$this->sub_queryGenerators[$idx]) {
 				$this->initObject_queryGenerator($idx);
@@ -482,7 +457,7 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 * @return	void
 	 */
 	public function initObject_queryFetcher() {
-		$this->queryFetcher = t3lib_div::makeInstance('tx_kbdisplay_queryFetcher');
+		$this->queryFetcher = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Query\Fetcher');
 		$this->queryFetcher->init($this, $this->rootObj);
 	}
 
@@ -501,16 +476,8 @@ class tx_kbdisplay_queryController extends tx_kbdisplay_flexFields {
 	 * @return	void
 	 */
 	public function initObject_rowProcessor() {
-		$this->rowProcessor = t3lib_div::makeInstance('tx_kbdisplay_rowProcessor');
+		$this->rowProcessor = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Processing\RowProcessor');
 		$this->rowProcessor->init($this, $this->rootObj);
 	}
 
-
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryController.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryController.php']);
-}
-
-?>

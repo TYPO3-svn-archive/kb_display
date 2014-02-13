@@ -1,4 +1,5 @@
 <?php
+namespace thinkopen_at\kbDisplay\Hooks;
 /***************************************************************
 *  Copyright notice
 *  
@@ -21,18 +22,18 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+
+
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /** 
- * Hook method for t3lib_befunc
+ * Hook method for "BackendUtility" which enables dynamic flexforms
+ * @todo: Create doc comments
+ * @todo: Use caching framework instead of creating file caches
  *
  * @author	Bernhard Kraft <kraftb@think-open.at>
  */
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- */
-
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
-
-class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
+class DynamicFlexforms extends \thinkopen_at\kbDisplay\Settings\FlexFieldParser {
 	var $currentRecursion = false;
 	var $maxRecursion = array(
 		'EXT:kb_display/res/flexform_ds_pi_cached__subcriteria_tpl.xml' => 2,
@@ -48,7 +49,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 				include($cacheFile);
 				$dataStructArray = $data;
 				if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugDynamicFlexforms']) {
-					t3lib_div::devLog('Used cached flexform XML', 'kb_display', 0, $dataStructArray);
+					GeneralUtility::devLog('Used cached flexform XML', 'kb_display', 0, $dataStructArray);
 				}
 				return;
 			}
@@ -91,9 +92,9 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 				$ok = $this->writeCacheFile($cacheFile, $dataStructArray);
 			}
 			if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugDynamicFlexforms']) {
-				t3lib_div::devLog('Generated '.($ok ? '(and cached) ' : '').'flexform XML', 'kb_display', 0, $dataStructArray);
+				GeneralUtility::devLog('Generated '.($ok ? '(and cached) ' : '').'flexform XML', 'kb_display', 0, $dataStructArray);
 				if (!$ok) {
-					t3lib_div::devLog('Error caching flexform XML. Does "typo3temp/kb_display/" exist and is writable?', 'kb_display', 2);
+					GeneralUtility::devLog('Error caching flexform XML. Does "typo3temp/kb_display/" exist and is writable?', 'kb_display', 2);
 				}
 			}
 		}
@@ -105,7 +106,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 		$cacheData .= $this->getArrayCode($currentData);
 		$cacheData .= ');';
 		$cacheData .= '?>';
-		return t3lib_div::writeFile($cacheFile, $cacheData);
+		return GeneralUtility::writeFile($cacheFile, $cacheData);
 	}
 
 	private function getArrayCode($currentData, $level = 0) {
@@ -138,13 +139,13 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 					$code .= 'NULL';
 				break;
 				case 'object':
-					die('Variable type "object" not valid in DS-XML!');
+					throw new \InvalidArgumentException('Variable type "object" not valid in DS-XML!', 1392242587);
 				break;
 				case 'resource':
-					die('Variable type "resource" not valid in DS-XML!');
+					throw new \InvalidArgumentException('Variable type "resource" not valid in DS-XML!', 1392242597);
 				break;
 				case 'unknown type':
-					die('Invalid variable type in DS-XML!');
+					throw new \InvalidArgumentException('Invalid variable type in DS-XML!', 1392242606);
 				break;
 			}
 			$code .= ','.chr(10);
@@ -156,7 +157,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 		$flexXML = $row['pi_flexform'];
 		$tables = array();
 		if ($flexXML) {
-			$flexData = t3lib_div::xml2array($flexXML);
+			$flexData = GeneralUtility::xml2array($flexXML);
 			if (is_array($flexData)) {
 				$tables[] = $flexData['data']['sDEF']['lDEF']['field_table']['vDEF'];
 				$additionalTables = $flexData['data']['sheet_tables']['lDEF']['list_tables']['el'];
@@ -172,20 +173,19 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 	}
 
 	private function setCriteriaFields_table($table, &$fieldCriteriaConfig) {
-		t3lib_div::loadTCA($table);
 		if (is_array($GLOBALS['TCA'][$table])) {
 			$fields = $GLOBALS['TCA'][$table]['columns'];
 			foreach ($fields as $field => $fieldConfig) {
 				switch ($fieldConfig['config']['type']) {
 					case 'group':
 						if ($fieldConfig['config']['internal_type']==='file') {
-							$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] .= ','.$field;
-							$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] .= ','.$field;
+							$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'], $field);
+							$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'], $field);
 						} elseif ($fieldConfig['config']['internal_type']==='db') {
 							$setConfig = $fieldConfig;
 							unset($setConfig['exclude']);
 							$setConfig['label'] = 'LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__compare_value';
-							$setConfig['displayCond'] = 'FIELD:field_compare_compareField:REQ:false && FIELD:field_compare_usersel:REQ:false && FIELD:field_compare_field,0,-5:IN:'.$field;
+							$setConfig['displayCond'] = '<and><item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item><item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item><item index="3" type="array">FIELD:field_compare_field,0,-5:IN:'.$field.'</item></and>';
 							$setConfig['config']['size'] = 10;
 							$setConfig['config']['autoSizeMax'] = 30;
 							$setConfig['config']['maxitems'] = 50;
@@ -193,14 +193,14 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 						} else {
 							print_r(array_keys($fieldCriteriaConfig));
 							print_r($fieldConfig);
-							die('TODO: Create code for setCriteriaFields_table / TCA-type: group other than "internal_type=file/db"');
+							throw new \RuntimeException('TODO: Create code for setCriteriaFields_table / TCA-type: group other than "internal_type=file/db"', 1392242648);
 						}
 					break;
 					case 'select':
 						$setConfig = $fieldConfig;
 						unset($setConfig['exclude']);
 						$setConfig['label'] = 'LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__compare_value';
-						$setConfig['displayCond'] = 'FIELD:field_compare_compareField:REQ:false && FIELD:field_compare_usersel:REQ:false && FIELD:field_compare_field,0,-5:IN:'.$field;
+						$setConfig['displayCond'] = '<and><item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item><item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item><item index="3" type="array">FIELD:field_compare_field,0,-5:IN:'.$field.'</item></and>';
 						$setConfig['config']['minitems'] = 0;
 						$setConfig['config']['maxitems'] = 40;
 						$setConfig['config']['size'] = 10;
@@ -209,11 +209,11 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 						$fieldCriteriaConfig['field_compare_value_'.$table.'_'.$field]['TCEforms'] = $setConfig;
 					break;
 					case 'check':
-						$fieldCriteriaConfig['field_compare_value_bool']['TCEforms']['displayCond'] .= ','.$field;
+						$fieldCriteriaConfig['field_compare_value_bool']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_bool']['TCEforms']['displayCond'], $field);
 					break;
 					case 'text':
-						$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] .= ','.$field;
-						$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] .= ','.$field;
+						$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'], $field);
+						$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'], $field);
 					break;
 					case 'inline':
 						// TODO: Write criteria-value-code for inline fields (database relation like)
@@ -222,47 +222,47 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 						$setConfig = $fieldConfig;
 						unset($setConfig['exclude']);
 						$setConfig['label'] = 'LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__compare_value';
-						$setConfig['displayCond'] = 'FIELD:field_compare_compareField:REQ:false && FIELD:field_compare_usersel:REQ:false && FIELD:field_compare_field,0,-5:IN:'.$field;
+						$setConfig['displayCond'] = '<and><item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item><item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item><item index="3" type="array">FIELD:field_compare_field,0,-5:IN:'.$field.'</item></and>';
 						$fieldCriteriaConfig['field_compare_value_'.$table.'_'.$field]['TCEforms'] = $setConfig;
 					break;
 					case 'input':
-						$eval = t3lib_div::trimExplode(',', $fieldConfig['config']['eval'], 1);
+						$eval = GeneralUtility::trimExplode(',', $fieldConfig['config']['eval'], 1);
 						$eval = array_diff($eval, array('nospace', 'alphanum', 'alphanum_x', 'lower', 'unique', 'trim', 'required', 'md5', 'password'));
 
 						$eval = implode(',', $eval);
 						switch ($eval) {
 							case 'int':
-								$fieldCriteriaConfig['field_compare_number']['TCEforms']['displayCond'] .= ','.$field;
-								$fieldCriteriaConfig['field_compare_value_int']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_number']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_number']['TCEforms']['displayCond'], $field);
+								$fieldCriteriaConfig['field_compare_value_int']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_int']['TCEforms']['displayCond'], $field);
 							break;
 							case '':
-								$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] .= ','.$field;
-								$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_string']['TCEforms']['displayCond'], $field);
+								$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond'], $field);
 //								$fieldCriteriaConfig['field_compare_value_string']['TCEforms']['displayCond']."<br />\n";
 							break;
 							case 'time':
 									// TODO: field_compare_time
-								$fieldCriteriaConfig['field_compare_type_time']['TCEforms']['displayCond'] .= ','.$field;
-								$fieldCriteriaConfig['field_compare_value_time']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_type_time']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_type_time']['TCEforms']['displayCond'], $field);
+								$fieldCriteriaConfig['field_compare_value_time']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_time']['TCEforms']['displayCond'], $field);
 							break;
 							case 'datetime':
-								$fieldCriteriaConfig['field_compare_date']['TCEforms']['displayCond'] .= ','.$field;
-								$fieldCriteriaConfig['field_compare_value_datetime']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_date']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_date']['TCEforms']['displayCond'], $field);
+								$fieldCriteriaConfig['field_compare_value_datetime']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_datetime']['TCEforms']['displayCond'], $field);
 							break;
 							case 'date':
-								$fieldCriteriaConfig['field_compare_date']['TCEforms']['displayCond'] .= ','.$field;
-								$fieldCriteriaConfig['field_compare_value_date']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_date']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_date']['TCEforms']['displayCond'], $field);
+								$fieldCriteriaConfig['field_compare_value_date']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_date']['TCEforms']['displayCond'], $field);
 							break;
 							case 'double2':
-								$fieldCriteriaConfig['field_compare_number']['TCEforms']['displayCond'] .= ','.$field;
-								$fieldCriteriaConfig['field_compare_value_double']['TCEforms']['displayCond'] .= ','.$field;
+								$fieldCriteriaConfig['field_compare_number']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_number']['TCEforms']['displayCond'], $field);
+								$fieldCriteriaConfig['field_compare_value_double']['TCEforms']['displayCond'] = $this->addDisplayCondField($fieldCriteriaConfig['field_compare_value_double']['TCEforms']['displayCond'], $field);
 							break;
 							case 'nospace':
 							case 'uniqueInPid':
 							case 'required':
 							break;
 							default:
-								t3lib_div::sysLog('Invalid "eval" configuration "'.$eval.'" for field type "'.$fieldConfig['config']['type'].'" criteria config!', 'kb_display', 3);
+								GeneralUtility::devLog('Invalid "eval" configuration "'.$eval.'" for field type "'.$fieldConfig['config']['type'].'" criteria config!', 'kb_display', 3);
 							break;
 						}
 					break;
@@ -271,7 +271,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 					case 'user':
 					break;
 					default:
-						t3lib_div::sysLog('No criteria-config for field type "'.$fieldConfig['config']['type'].'" defined!', 'kb_display', 3);
+						GeneralUtility::devLog('No criteria-config for field type "'.$fieldConfig['config']['type'].'" defined!', 'kb_display', 3);
 					break;
 				}
 			}
@@ -296,7 +296,7 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 	public function replaceIncludes($value, $key, $level) {
 		if (strpos($value, 'includeXML:')===0) {
 			$fileName = substr($value, strlen('includeXML:'));
-			$file = t3lib_div::getFileAbsFileName($fileName);
+			$file = GeneralUtility::getFileAbsFileName($fileName);
 			if (file_exists($file) && is_file($file)) {
 				$key = $fileName;
 				if (!isset($this->currentRecursion[$key])) {
@@ -305,29 +305,33 @@ class tx_kbdisplay_t3libbefunc extends tx_kbdisplay_flexFields {
 				if (!$this->currentRecursion[$key]) {
 					$value = '__unset__';
 				} elseif (--$this->currentRecursion[$key]) {
-					$data = t3lib_div::getURL($file);
-					$xml = t3lib_div::xml2array($data);
+					$data = GeneralUtility::getURL($file);
+					$xml = GeneralUtility::xml2array($data);
 					if (is_array($xml)) {
 						$this->getFlexFormDS_postProcessDS($xml, false, false, false, false, $level+1);
 						$value = $xml;
 					} else {
-						die('Included XML file "'.$file.'" is not valid XML! Error: "'.$xml.'"');
+						throw new \InvalidArgumentException('Included XML file "'.$file.'" is not valid XML! Error: "'.$xml.'"', 1392242457);
 					}
 				} else {
 					$value = '__unset__';
 				}
 			} else {
-				die('Included XML file "'.$file.'" does not exist !');
+				throw new \InvalidArgumentException('Included XML file "'.$file.'" does not exist !', 1392242489);
 			}
 		}
 		return $value;
 	}
 
+	protected function addDisplayCondField($displayCond, $field) {
+		foreach ($displayCond as $key => $value) {
+			if (is_array($value)) {
+				$displayCond[$key] = $this->addDisplayCondField($value, $field);
+			} else {
+				$displayCond[$key] = str_replace('dummy', $field.',dummy', $value);
+			}
+		}
+		return $displayCond;
+	}
 
 }
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_t3libbefunc.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_t3libbefunc.php']);
-}
-
-?>

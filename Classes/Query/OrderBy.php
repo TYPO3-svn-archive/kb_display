@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Query;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2012 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,7 +24,7 @@
 ***************************************************************/
 
 
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class handling the ordering/sorting elements of the BE plugin flexform
@@ -32,7 +33,7 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
  * @package	TYPO3
  * @subpackage	tx_kbdisplay
  */
-class tx_kbdisplay_queryOrderBy {
+class OrderBy {
 	private $parentObj = null;
 	private $rootObj = null;
 	private $table = null;
@@ -70,7 +71,6 @@ class tx_kbdisplay_queryOrderBy {
 	 */
 	public function set_table($table) {
 		$this->table = $table;
-		t3lib_div::loadTCA($this->table);
 		$this->tableIndex = $this->parentObj->get_tableIndex();
 	}
 
@@ -105,7 +105,7 @@ class tx_kbdisplay_queryOrderBy {
 
 		$parsed_item_orderBy = false;
 		if ($tableIdx === $this->tableIndex) {
-			if ($file = t3lib_div::getFileAbsFileName($flexItem_orderBy['field_sort_custom'])) {
+			if ($file = GeneralUtility::getFileAbsFileName($flexItem_orderBy['field_sort_custom'])) {
 				$orderBy['field'] = $field;
 				$orderBy['table'] = $table;
 				$orderBy['index'] = $tableIdx;
@@ -118,7 +118,7 @@ class tx_kbdisplay_queryOrderBy {
 				$smarty->assign('flexItem', $flexItem_orderBy);
 				$smarty->setSmartyVar('template_dir', dirname($file));
 				$XML_orderBy = $smarty->display($file, md5($file));
-				$parsed_item_orderBy = t3lib_div::xml2array($XML_orderBy);
+				$parsed_item_orderBy = GeneralUtility::xml2array($XML_orderBy);
 				if (!is_array($parsed_item_orderBy)) {
 					die('Invalid order XML for field "'.$field.'"!');
 				}
@@ -149,10 +149,3 @@ class tx_kbdisplay_queryOrderBy {
 	}
 
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryOrderBy.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryOrderBy.php']);
-}
-
-?>

@@ -9,6 +9,12 @@
 			<eval>date</eval>
 			<checkbox>0</checkbox>
 		</config>
-		<displayCond>FIELD:field_compare_compareField:REQ:false &amp;&amp; FIELD:field_compare_field,0,-5:IN:starttime,endtime &amp;&amp; FIELD:field_compare_date:!IN:smallerNow,biggerNow</displayCond>
+		<displayCond>
+			<and>
+				<item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item>
+				<item index="2" type="array">FIELD:field_compare_field,0,-5:IN:starttime,endtime,dummy</item>
+				<item index="3" type="array">FIELD:field_compare_date:!IN:smallerNow,biggerNow</item>
+			</and>
+		</displayCond>
 	</TCEforms>
 </T3DataStructure>

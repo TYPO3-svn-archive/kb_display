@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Query;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,7 +24,7 @@
 ***************************************************************/
 
 
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class handling the criteria elements of the BE plugin flexform
@@ -32,7 +33,7 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
  * @package	TYPO3
  * @subpackage	tx_kbt3tris
  */
-class tx_kbdisplay_queryCriteria {
+class Criteria {
 	private $parentObj = null;
 	private $rootObj = null;
 	private $table = null;
@@ -89,7 +90,6 @@ class tx_kbdisplay_queryCriteria {
 	 */
 	public function set_table($table) {
 		$this->table = $table;
-		t3lib_div::loadTCA($this->table);
 		$this->tableIndex = $this->parentObj->get_tableIndex();
 	}
 
@@ -256,7 +256,6 @@ AND
 	 * @return array	All possible data options
 	 */
 	private function getFieldOptions($table, $field, $fieldKey) {
-		t3lib_div::loadTCA($table);
 		$config = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
 
 		$options = array();
@@ -265,7 +264,7 @@ AND
 				case 'group':
 					switch ($config['internal_type']) {
 						case 'db':
-							$foreignTables = t3lib_div::trimExplode(',', $config['allowed']);
+							$foreignTables = GeneralUtility::trimExplode(',', $config['allowed']);
 							foreach ($foreignTables as $foreignTable) {
 								$tmpOptions = $this->getOptions_query($table, $field, $foreignTable, '', $fieldKey);
 								$options = array_merge($options, $tmpOptions);
@@ -441,14 +440,14 @@ AND
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugFilterQuery']) {
 			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
 			$GLOBALS['TYPO3_DB']->debugOutput = true;
-			t3lib_div::devLog('Prepared filter query', 'kb_display', 0, $queryParts);
+			GeneralUtility::devLog('Prepared filter query', 'kb_display', 0, $queryParts);
 		}
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugFilterQuery']) {
 			if ($result) {
-				t3lib_div::devLog('Filter query executed successfully', 'kb_display', -1, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
+				GeneralUtility::devLog('Filter query executed successfully', 'kb_display', -1, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
 			} else {
-				t3lib_div::devLog('Filter query failed', 'kb_display', 3, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
+				GeneralUtility::devLog('Filter query failed', 'kb_display', 3, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
 			}
 			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = false;
 			$GLOBALS['TYPO3_DB']->debugOutput = false;
@@ -670,14 +669,14 @@ AND
 		$this->rootObj->hook('queryCriteria/parse_criteria/preRender', $params);
 		// EOF: hook - queryCriteria/parse_criteria/preRender
 
-		if ($file = t3lib_div::getFileAbsFileName($criteria['field_compare_custom'])) {
+		if ($file = GeneralUtility::getFileAbsFileName($criteria['field_compare_custom'])) {
 			$smarty->setSmartyVar('template_dir', dirname($file));
 			$whereXML = $smarty->display(basename($file), '', md5($file));
 		} else {
 			$whereXML = $smarty->display($type.'/compareType.tpl', '', md5($templateDir));
 		}
 // echo $whereXML;
-		$whereData = t3lib_div::xml2array($whereXML);
+		$whereData = GeneralUtility::xml2array($whereXML);
 
 		/*
 		 * Call hook which allows interfering the compare XML process after rendering
@@ -751,7 +750,6 @@ AND
 	 */
 	private function getFieldCompareType($field, $table) {
 		// TODO: Make this configurable !
-		t3lib_div::loadTCA($table);
 		$config = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
 
 		$type = '';
@@ -823,7 +821,7 @@ AND
 	 * @return	string		The compare type
 	 */
 	private function getFieldCompareType_input($field, $table, $config) {
-		$eval = t3lib_div::trimExplode(',', $config['eval'], 1);
+		$eval = GeneralUtility::trimExplode(',', $config['eval'], 1);
 		$eval = array_diff($eval, array('required', 'trim', 'lower', 'alphanum'));
 		if (!count($eval)) {
 			return 'string';
@@ -920,12 +918,4 @@ AND
 		return $value;
 	}
 
-
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryCriteria.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryCriteria.php']);
-}
-
-?>

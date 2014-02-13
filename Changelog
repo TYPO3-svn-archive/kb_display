@@ -1,3 +1,6 @@
+2014-02-11  Bernhard Kraft  <kraftb@think-open.at>
+	* Reverted commits for unbuffered queries (2013-01-31, 2013-02-11)
+
 2013-02-12  Bernhard Kraft  <kraftb@think-open.at>
 	* Fixed the "string" compare type: It didn't compare against the "other" field. Only plain-text value compares were possible.
 	* Added a Flexform field which allows to configure the number of rows (limit) retrieved for "Additional query" tables

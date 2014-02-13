@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Hooks;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2010-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,18 +24,20 @@
 ***************************************************************/
 
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Hook for clearing FE-Plugin cache files
  *
- * @author	Bernhard Kraft <kraftb@think-open.at>
- * @package	TYPO3
- * @subpackage	tx_kbdisplay
+ * @author Bernhard Kraft <kraftb@think-open.at>
+ * @package TYPO3
+ * @subpackage kb_display
  */
-class tx_kbdisplay_t3libtcemain {
+class DataHandlerClearCache {
 
 	function clearCaches($params, &$parentObject) {
 		$path = PATH_site.'typo3temp/kb_display/';
-		$files = t3lib_div::getFilesInDir($path);
+		$files = GeneralUtility::getFilesInDir($path);
 		foreach ($files as $file) {
 			if ($file !== 'index.html') {
 				unlink($path.$file);
@@ -42,10 +45,3 @@ class tx_kbdisplay_t3libtcemain {
 		}
 	}
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_t3libtcemain.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/hooks/class.tx_kbdisplay_t3libtcemain.php']);
-}
-
-?>

@@ -8,3 +8,7 @@
 * Write documentation for filters (lib/class.tx_kbdisplay_queryCriteria.php) TypoScript options
 
 
+
+* Classes\Query\...: The classes in here should eventually extend a base class "sqlQueryComponent" which defines to which
+  part of the query (SELECT, FROM, WHERE, GROUPBY, ...) the result is set to and supply a common interface
+

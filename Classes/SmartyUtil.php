@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,25 +23,25 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
+ * Class for additional smarty stuff
  *
- * Smarty plugin "mysql_escape"
- * -------------------------------------------------------------
- * File:    modifier.mysql_escape.php
- * Type:    modifier
- * Name:    mysql_escape
- * Version: 1.0
- * Author:  Bernhard Kraft <kraftb@think-open.at>
- * Purpose: Passes a value through TYPO3_DB->quoteStr()
- * Example: {$assignedPHPvariable|mysql_escape}
- * Note:	See mysql_escape_string for more information
- * -------------------------------------------------------------
- *
- **/
+ * @author	Bernhard Kraft <kraftb@think-open.at>
+ * @package	TYPO3
+ * @subpackage	kb_display
+ */
+class SmartyUtil {
 
+	public function getInstance() {
+		$smarty = \tx_smarty::smarty();
+		$modifiers = GeneralUtility::makeInstance('thinkopen_at\kbDisplay\Hooks\Smarty\Modifiers');
+		foreach ($modifiers->getPluginMethods() as $name => $method) {
+			$smarty->register_modifier($name, array('thinkopen_at\kbDisplay\Hooks\Smarty\Modifiers', $method));
+		}
+		return $smarty;
+	}
 
-function smarty_modifier_mysql_escape($text, $setup=false) {
-	return $GLOBALS['TYPO3_DB']->quoteStr($text, '');
 }
-
-?>

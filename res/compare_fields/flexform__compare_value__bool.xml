@@ -3,9 +3,15 @@
 	<TCEforms>
 		<exclude>1</exclude>
 		<label>LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__compare_value__bool</label>
-		<displayCond>FIELD:field_compare_compareField:REQ:false &amp;&amp; FIELD:field_compare_usersel:REQ:false &amp;&amp; FIELD:field_compare_field,0,-5:IN:deleted,hidden</displayCond>
 		<config>
 			<type>check</type>
 		</config>
+		<displayCond>
+			<and>
+				<item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item>
+				<item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item>
+				<item index="2" type="array">FIELD:field_compare_field,0,-5:IN:deleted,hidden,dummy</item>
+			</and>
+		</displayCond>
 	</TCEforms>
 </T3DataStructure>

@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Query;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2012 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2012-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,7 +24,7 @@
 ***************************************************************/
 
 
-require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class handling the "group by" selection of the BE plugin flexform to generate the GROUP BY statement for the SQL query
@@ -32,7 +33,7 @@ require_once(PATH_kb_display.'lib/class.tx_kbdisplay_flexFields.php');
  * @package	TYPO3
  * @subpackage	tx_kbdisplay
  */
-class tx_kbdisplay_queryGroupBy {
+class GroupBy {
 	private $parentObj = null;
 	private $rootObj = null;
 	private $table = null;
@@ -70,7 +71,6 @@ class tx_kbdisplay_queryGroupBy {
 	 */
 	public function set_table($table) {
 		$this->table = $table;
-		t3lib_div::loadTCA($this->table);
 		$this->tableIndex = $this->parentObj->get_tableIndex();
 	}
 
@@ -84,7 +84,7 @@ class tx_kbdisplay_queryGroupBy {
 				// groupBy content is just a comma separated list of fields. For now "trimExplode" will do the job.
 				// If more complex "group by" handling is required sometime use the "orderBy" class as an example
 				// and create a flexform section instead of a simple field of TCA type "select".
-			$fields_groupBy = t3lib_div::trimExplode(',', $this->flexFormData_groupBy, 1);
+			$fields_groupBy = GeneralUtility::trimExplode(',', $this->flexFormData_groupBy, 1);
 			foreach ($fields_groupBy as $field) {
 				$item_groupBy = $this->parse_item_groupBy($field);
 				if ($item_groupBy) {
@@ -115,7 +115,7 @@ class tx_kbdisplay_queryGroupBy {
 
 		$parsed_item_groupBy = false;
 /*
-		if ($file = t3lib_div::getFileAbsFileName($item_groupBy['field_groupBy_custom'])) {
+		if ($file = GeneralUtility::getFileAbsFileName($item_groupBy['field_groupBy_custom'])) {
 			$item_groupBy['field_groupBy']['field'] = $field;
 			$item_groupBy['field_groupBy']['table'] = $table;
 			$item_groupBy['field_groupBy']['index'] = $tableIdx;
@@ -126,7 +126,7 @@ class tx_kbdisplay_queryGroupBy {
 			$smarty->assign('groupBy', $item_groupBy);
 			$smarty->setSmartyVar('template_dir', dirname($file));
 			$XML_groupBy = $smarty->display($file, md5($file));
-			$parsed_item_groupBy = t3lib_div::xml2array($XML_groupBy);
+			$parsed_item_groupBy = GeneralUtility::xml2array($XML_groupBy);
 			if (!is_array($parsed_item_groupBy)) {
 				die('Invalid "group by" XML for field "'.$field.'"!');
 			}
@@ -157,10 +157,3 @@ class tx_kbdisplay_queryGroupBy {
 	}
 
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryGroupBy.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryGroupBy.php']);
-}
-
-?>

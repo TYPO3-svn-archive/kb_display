@@ -1,11 +1,10 @@
 <?php
+namespace thinkopen_at\kbDisplay\Query;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2012 Bernhard Kraft <kraftb@think-open.at>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
+*  (c) 2008-2014 Bernhard Kraft <kraftb@think-open.at>
+*  All rights reserved * *  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
@@ -23,6 +22,8 @@
 ***************************************************************/
 
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class for generating and executing the query puzzled together
  *
@@ -30,16 +31,16 @@
  * @package	TYPO3
  * @subpackage	kb_display
  */
-class tx_kbdisplay_queryGenerator {
-	private $parentObj = null;
-	private $rootObj = null;
+class Generator {
+	protected $parentObj = null;
+	protected $rootObj = null;
 
-	private $tables = array();
-	private $fields = array();
-	private $whereParts = array();
-	private $parts_orderBy = array();
-	private $parts_groupBy = array();
-	private $limit = -1;
+	protected $tables = array();
+	protected $fields = array();
+	protected $whereParts = array();
+	protected $parts_orderBy = array();
+	protected $parts_groupBy = array();
+	protected $limit = -1;
 
 	private $query = array(
 		'SELECT' => '',
@@ -57,17 +58,9 @@ class tx_kbdisplay_queryGenerator {
 	 * @param	object		A pointer to the parent object instance (The FE-plugin)
 	 * @return	void
 	 */
-	public function init(&$parentObj, &$rootObj, $alternateLink = false) {
+	public function init(&$parentObj, &$rootObj) {
 		$this->parentObj = &$parentObj;
 		$this->rootObj = &$rootObj;
-//		$this->DB = $GLOBALS['TYPO3_DB'];
-
-//		if ($alternateLink) {
-			$this->DB = t3lib_div::makeInstance('tx_kbdisplay_db');
-			$this->DB->debugOutput = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sqlDebug'];
-			$link = $this->DB->sql_pconnect(TYPO3_db_host, TYPO3_db_username, TYPO3_db_password);
-			$this->DB->sql_select_db(TYPO3_db);
-//		}
 	}
 
 	private function initQueryArray() {
@@ -459,7 +452,7 @@ class tx_kbdisplay_queryGenerator {
 			$tableName = $this->parentObj->get_tableName($tableIdx);
 			$replaceKey = '`'.$tableName.'__'.$tableIdx.'`.`'.$field.'`';
 			$replaceKeys[] = $replaceKey;
-			$replaceValues[] = $this->DB->fullQuoteStr($replaceValue, $tableName);
+			$replaceValues[] = $GLOBALS['TYPO3_DB']->fullQuoteStr($replaceValue, $tableName);
 		}
 //print_r($replaceKeys);
 //print_r($replaceValues);
@@ -471,31 +464,25 @@ class tx_kbdisplay_queryGenerator {
 	 *
 	 * @return	boolean		Wheter the SELECT query was successfull or not (meaning: returned a result resource)
 	 */
-	public function queryExecute($unbufferedQuery = false) {
+	public function queryExecute() {
 		if ($this->result) {
-			$this->DB->sql_free_result($this->result);
+			$GLOBALS['TYPO3_DB']->sql_free_result($this->result);
 			$this->result = false;
 		}
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugQuery']) {
-			$this->DB->debugOutput = true;
-			$this->DB->store_lastBuiltQuery = true;
-			t3lib_div::devLog('Prepared query', 'kb_display', 0, $this->query);
+			$GLOBALS['TYPO3_DB']->debugOutput = true;
+			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
+			GeneralUtility::devLog('Prepared query', 'kb_display', 0, $this->query);
 		}
-		$query = $this->DB->SELECTquery($this->query['SELECT'], $this->query['FROM'], $this->query['WHERE'], $this->query['GROUPBY'], $this->query['ORDERBY'], $this->query['LIMIT']);
-		if ($unbufferedQuery) {
-			$this->result = mysql_unbuffered_query($query, $this->DB->link);
-		} else {
-			$this->result = mysql_query($query, $this->DB->link);
-		}
-//		$this->result = $this->DB->exec_SELECT_queryArray($this->query);
+		$this->result = $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($this->query);
 		if ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['kb_display']['debugQuery']) {
 			if ($this->result) {
-				t3lib_div::devLog('Query executed successfully', 'kb_display', -1, array($this->DB->debug_lastBuiltQuery));
+				GeneralUtility::devLog('Query executed successfully', 'kb_display', -1, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
 			} else {
-				t3lib_div::devLog('Query failed', 'kb_display', 3, array($this->DB->debug_lastBuiltQuery));
+				GeneralUtility::devLog('Query failed', 'kb_display', 3, array($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery));
 			}
 		}
-		return $this->result?true:false;
+		return $this->result ? true : false;
 	}
 
 	/**
@@ -506,23 +493,6 @@ class tx_kbdisplay_queryGenerator {
 	public function get_queryResult() {
 		return $this->result;
 	}
-
-	/**
-	 * This method fetches a single result row and returns it
-	 *
-	 * @return	mixed			Either the fetched result row array, or false in case of error
-	 */
-	function fetchRow() {
-		// TODO: Proper error handling
-		if ($this->result) {
-			return $this->DB->sql_fetch_assoc($this->result);
-		} else {
-//			$this->addError('ERROR', 'No query result available !');
-			die('ERROR: No query result available !');
-			return false;
-		}
-	}
-
 
 	/**
 	 * Returns joining information about how to combine/merge result rows
@@ -559,10 +529,3 @@ class tx_kbdisplay_queryGenerator {
 	}
 
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryGenerator.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_queryGenerator.php']);
-}
-
-?>

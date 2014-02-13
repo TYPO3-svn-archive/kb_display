@@ -1,8 +1,9 @@
 <?php
+namespace thinkopen_at\kbDisplay\Settings;
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008-2010 Bernhard Kraft <kraftb@think-open.at>
+*  (c) 2008-2014 Bernhard Kraft <kraftb@think-open.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -28,9 +29,9 @@
  *
  * @author	Bernhard Kraft <kraftb@think-open.at>
  * @package	TYPO3
- * @subpackage	tx_kbt3tris
+ * @subpackage	kb_display
  */
-class tx_kbdisplay_flexFields {
+class FlexFieldParser {
 
 
 	/**
@@ -85,7 +86,7 @@ class tx_kbdisplay_flexFields {
 	 * @param	string		The vDEF language key to use
 	 * @return	array		An array containing a cleaned up version of all elements of the FlexForm section
 	 */
-	function parseSubSectionElements($data, $recursiveLevels = 0) {
+	public function parseSubSectionElements($data, $recursiveLevels = 0) {
 		if (is_array($data) && count($data)) {
 			foreach ($data as $key => $value) {
 				if (is_array($value)) {
@@ -102,10 +103,3 @@ class tx_kbdisplay_flexFields {
 	}
 
 }
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_flexFields.php']) {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/kb_display/lib/class.tx_kbdisplay_flexFields.php']);
-}
-
-?>

@@ -11,7 +11,7 @@
 					<numIndex index="1"></numIndex>
 				</numIndex>
 			</items>
-			<itemsProcFunc>EXT:kb_display/class.tx_kbdisplay_itemsProc.php:&amp;tx_kbdisplay_itemsProc->compareFields</itemsProcFunc>
+			<itemsProcFunc>thinkopen_at\kbDisplay\TcaItemProcessing->compareFields</itemsProcFunc>
 		</config>
 	</TCEforms>
 </T3DataStructure>

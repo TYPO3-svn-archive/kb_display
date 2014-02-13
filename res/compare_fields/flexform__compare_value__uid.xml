@@ -12,6 +12,12 @@
 			<minitems>0</minitems>
 			<maxitems>50</maxitems>
 		</config>
-		<displayCond>FIELD:field_compare_compareField:REQ:false &amp;&amp; FIELD:field_compare_usersel:REQ:false &amp;&amp; FIELD:field_compare_field,0,-5:IN:uid</displayCond>
+		<displayCond>
+			<and>
+				<item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item>
+				<item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item>
+				<item index="2" type="array">FIELD:field_compare_field,0,-5:IN:uid</item>
+			</and>
+		</displayCond>
 	</TCEforms>
 </T3DataStructure>
