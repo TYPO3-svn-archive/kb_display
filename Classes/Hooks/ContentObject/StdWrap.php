@@ -24,6 +24,8 @@ namespace thinkopen_at\kbDisplay\Hooks\ContentObject;
 ***************************************************************/
 
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 
 class StdWrap implements \TYPO3\CMS\Frontend\ContentObject\ContentObjectStdWrapHookInterface {
 

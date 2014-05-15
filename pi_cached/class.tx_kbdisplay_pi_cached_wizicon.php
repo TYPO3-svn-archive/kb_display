@@ -43,29 +43,16 @@ class tx_kbdisplay_pi_cached_wizicon {
 					function proc($wizardItems) {
 						global $LANG;
 
-						$LL = $this->includeLocalLang();
-
 						$wizardItems['plugins_tx_kbdisplay_pi_cached'] = array(
 							'icon' => t3lib_extMgm::extRelPath('kb_display').'pi_cached/ce_wiz.gif',
-							'title' => $LANG->getLLL('pi_cached_title', $LL),
-							'description' => $LANG->getLLL('pi_cached_plus_wiz_description', $LL),
+							'title' => $LANG->sL('LLL:EXT:kb_display/locallang.xml:pi_cached_title'),
+							'description' => $LANG->sL('LLL:EXT:kb_display/locallang.xml:pi_cached_plus_wiz_description'),
 							'params' => '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=kb_display_pi_cached',
 						);
 
 						return $wizardItems;
 					}
 
-					/**
-					 * Reads the [extDir]/locallang.xml and returns the $LOCAL_LANG array found in that file.
-					 *
-					 * @return	The array with language labels
-					 */
-					function includeLocalLang()	{
-						$llFile = t3lib_extMgm::extPath('kb_display').'locallang.xml';
-						$LOCAL_LANG = t3lib_div::readLLXMLfile($llFile, $GLOBALS['LANG']->lang);
-						
-						return $LOCAL_LANG;
-					}
 				}
 
 

@@ -1,3 +1,12 @@
+2014-05-15  Bernhard Kraft  <kraftb@think-open.at>
+	* Added missing file "FrontendPlugin.php" (was missing for last commit)
+	* Improved readability (source highlighting) of DynamicFlexforms.php (breaking PHP tags)
+	* StdWrap hook class was missing a use statement
+	* The default "new content element" wizard wasn't working anymore. Fixed calls to "LANG"
+
+2014-02-13  Bernhard Kraft  <kraftb@think-open.at>
+	* Changed class layout to the new 6.2 style and introduced namespaces for every class.
+
 2014-02-11  Bernhard Kraft  <kraftb@think-open.at>
 	* Reverted commits for unbuffered queries (2013-01-31, 2013-02-11)
 

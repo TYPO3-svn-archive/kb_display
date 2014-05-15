@@ -101,11 +101,11 @@ class DynamicFlexforms extends \thinkopen_at\kbDisplay\Settings\FlexFieldParser 
 	}
 
 	private function writeCacheFile($cacheFile, $currentData) {
-		$cacheData = '<?php'.chr(10);
+		$cacheData = '<'.'?php'.chr(10);
 		$cacheData .= '$data = Array('.chr(10);
 		$cacheData .= $this->getArrayCode($currentData);
 		$cacheData .= ');';
-		$cacheData .= '?>';
+		$cacheData .= '?'.'>';
 		return GeneralUtility::writeFile($cacheFile, $cacheData);
 	}
 
