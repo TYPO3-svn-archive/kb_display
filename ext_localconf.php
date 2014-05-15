@@ -18,6 +18,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['stdW
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc']['kb_display'] = 'thinkopen_at\kbDisplay\Hooks\DataHandlerClearCache->clearCaches';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_befunc.php']['getFlexFormDSClass']['kb_display'] = 'thinkopen_at\kbDisplay\Hooks\DynamicFlexforms';
 
+// Currently backend forms do not implement everything we need. So there needs to be a SYS-Object (XCLASS) for
+// class "ElementConditionMatcher"
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\CMS\Backend\Form\ElementConditionMatcher']['className'] = 'thinkopen_at\kbDisplay\SysObjects\ElementConditionMatcher';
+\thinkopen_at\kbDisplay\SysObjects\ElementConditionMatcher::registerMatchObject('KB_DISPLAY_FIELD', 'thinkopen_at\kbDisplay\Hooks\FieldElementConditionMatcher');
+
 // What is this hook good for?
 // $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['checkAlternativeIdMethods-PostProc']['kb_display_cHash'] = 'thinkopen_at\kbDisplay\Hooks\RealUrl->override_cHash';
 

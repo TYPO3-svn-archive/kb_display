@@ -3,6 +3,11 @@
 	* Improved readability (source highlighting) of DynamicFlexforms.php (breaking PHP tags)
 	* StdWrap hook class was missing a use statement
 	* The default "new content element" wizard wasn't working anymore. Fixed calls to "LANG"
+	* Added a Sys-Object for the FieldElementConditionMatcher which implements a hook for displayCond conditions
+	* Added a hook for displayCond which introduces "KB_DISPLAY_FIELD" and changed all flexform XMLs accordingly
+	* Fixed smarty issue: Use "setTemplateDir" instead of setting smarty property
+	* Fixed smarty issue: Plugins got included twice
+	* When using LEFT JOIN the enable fields should allow a NULL value
 
 2014-02-13  Bernhard Kraft  <kraftb@think-open.at>
 	* Changed class layout to the new 6.2 style and introduced namespaces for every class.

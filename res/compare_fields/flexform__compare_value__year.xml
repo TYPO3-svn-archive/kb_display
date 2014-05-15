@@ -10,10 +10,10 @@
 			<checkbox>0</checkbox>
 		</config>
 		<displayCond>
-			<and>
-				<item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item>
-				<item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item>
-				<item index="3" type="array">FIELD:field_compare_field,0,-5:IN:dummy</item>
+			<and type="array">
+				<item index="1">FIELD:field_compare_compareField:REQ:false</item>
+				<item index="2">FIELD:field_compare_usersel:REQ:false</item>
+				<item index="3">KB_DISPLAY_FIELD:field_compare_field,0,-5:IN:dummy</item>
 			</and>
 		</displayCond>
 	</TCEforms>

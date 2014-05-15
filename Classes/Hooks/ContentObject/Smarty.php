@@ -62,7 +62,7 @@ class Smarty {
 				$this->smarty->assign('data', $parentObj->data);
 			}
 			$templateDir = dirname($templateFile);
-			$this->smarty->setSmartyVar('template_dir', $templateDir);
+			$this->smarty->setTemplateDir($templateDir);
 			$content = $this->smarty->display(basename($templateFile), '', md5($templateDir));
 		}
 		return $content;

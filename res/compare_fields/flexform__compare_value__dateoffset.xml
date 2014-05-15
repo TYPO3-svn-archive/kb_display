@@ -9,9 +9,9 @@
 			<eval>int</eval>
 		</config>
 		<displayCond>
-			<and>
-				<item index="1" type="array">FIELD:field_compare_field,0,-5:IN:crdate,tstamp,starttime,endtime,dummy</item>
-				<item index="2" type="array">FIELD:field_compare_date:!IN:smaller,bigger,equals</item>
+			<and type="array">
+				<item index="1">KB_DISPLAY_FIELD:field_compare_field,0,-5:IN:crdate,tstamp,starttime,endtime,dummy</item>
+				<item index="2">FIELD:field_compare_date:!IN:smaller,bigger,equals</item>
 			</and>
 		</displayCond>
 	</TCEforms>

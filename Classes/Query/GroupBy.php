@@ -124,7 +124,7 @@ class GroupBy {
 			$item_groupBy['fe_user'] = $GLOBALS['TSFE']->fe_user->user;
 			$smarty = $this->rootObj->get_smartyClone();
 			$smarty->assign('groupBy', $item_groupBy);
-			$smarty->setSmartyVar('template_dir', dirname($file));
+			$smarty->setTemplateDir(dirname($file));
 			$XML_groupBy = $smarty->display($file, md5($file));
 			$parsed_item_groupBy = GeneralUtility::xml2array($XML_groupBy);
 			if (!is_array($parsed_item_groupBy)) {

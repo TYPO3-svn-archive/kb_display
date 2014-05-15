@@ -185,7 +185,13 @@ class DynamicFlexforms extends \thinkopen_at\kbDisplay\Settings\FlexFieldParser 
 							$setConfig = $fieldConfig;
 							unset($setConfig['exclude']);
 							$setConfig['label'] = 'LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__compare_value';
-							$setConfig['displayCond'] = '<and><item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item><item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item><item index="3" type="array">FIELD:field_compare_field,0,-5:IN:'.$field.'</item></and>';
+							$setConfig['displayCond'] = array(
+								'and' => array(
+									'1' => 'FIELD:field_compare_compareField:REQ:false',
+									'2' => 'FIELD:field_compare_usersel:REQ:false',
+									'3' => 'KB_DISPLAY_FIELD:field_compare_field,0,-5:IN:'.$field,
+								)
+							);
 							$setConfig['config']['size'] = 10;
 							$setConfig['config']['autoSizeMax'] = 30;
 							$setConfig['config']['maxitems'] = 50;
@@ -200,7 +206,13 @@ class DynamicFlexforms extends \thinkopen_at\kbDisplay\Settings\FlexFieldParser 
 						$setConfig = $fieldConfig;
 						unset($setConfig['exclude']);
 						$setConfig['label'] = 'LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__compare_value';
-						$setConfig['displayCond'] = '<and><item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item><item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item><item index="3" type="array">FIELD:field_compare_field,0,-5:IN:'.$field.'</item></and>';
+						$setConfig['displayCond'] = array(
+							'and' => array(
+								'1' => 'FIELD:field_compare_compareField:REQ:false',
+								'2' => 'FIELD:field_compare_usersel:REQ:false',
+								'3' => 'KB_DISPLAY_FIELD:field_compare_field,0,-5:IN:'.$field,
+							)
+						);
 						$setConfig['config']['minitems'] = 0;
 						$setConfig['config']['maxitems'] = 40;
 						$setConfig['config']['size'] = 10;
@@ -222,7 +234,13 @@ class DynamicFlexforms extends \thinkopen_at\kbDisplay\Settings\FlexFieldParser 
 						$setConfig = $fieldConfig;
 						unset($setConfig['exclude']);
 						$setConfig['label'] = 'LLL:EXT:kb_display/locallang.xml:pi_cached_criteria__compare_value';
-						$setConfig['displayCond'] = '<and><item index="1" type="array">FIELD:field_compare_compareField:REQ:false</item><item index="2" type="array">FIELD:field_compare_usersel:REQ:false</item><item index="3" type="array">FIELD:field_compare_field,0,-5:IN:'.$field.'</item></and>';
+						$setConfig['displayCond'] = array(
+							'and' => array(
+								'1' => 'FIELD:field_compare_compareField:REQ:false',
+								'2' => 'FIELD:field_compare_usersel:REQ:false',
+								'3' => 'KB_DISPLAY_FIELD:field_compare_field,0,-5:IN:'.$field,
+							),
+						);
 						$fieldCriteriaConfig['field_compare_value_'.$table.'_'.$field]['TCEforms'] = $setConfig;
 					break;
 					case 'input':

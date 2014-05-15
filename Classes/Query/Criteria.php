@@ -649,7 +649,7 @@ AND
 
 		$smarty = $this->rootObj->get_smartyClone();
 		$templateDir = PATH_kb_display.'compareTypes/';
-		$smarty->setSmartyVar('template_dir', $templateDir);
+		$smarty->setTemplateDir($templateDir);
 		$smarty->assign('criteria', $criteria);
 
 		/*
@@ -670,7 +670,7 @@ AND
 		// EOF: hook - queryCriteria/parse_criteria/preRender
 
 		if ($file = GeneralUtility::getFileAbsFileName($criteria['field_compare_custom'])) {
-			$smarty->setSmartyVar('template_dir', dirname($file));
+			$smarty->setTemplateDir(dirname($file));
 			$whereXML = $smarty->display(basename($file), '', md5($file));
 		} else {
 			$whereXML = $smarty->display($type.'/compareType.tpl', '', md5($templateDir));

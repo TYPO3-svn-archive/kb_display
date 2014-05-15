@@ -256,8 +256,6 @@ class FrontendPlugin extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		$this->smarty->setSmartyVar('caching', $this->cacheSmarty);
 		$this->smarty->setSmartyVar('compile_dir', $this->smarty_compileDir);
 		$this->smarty->setSmartyVar('cache_dir', $this->smarty_cacheDir);
-		$this->smarty->register_modifier("mysql_escape","smarty_modifier_mysql_escape");
-		$this->smarty->register_modifier("mysql_escapelike","smarty_modifier_mysql_escapelike");
 		// TODO: Disable for production use
 		// $this->smarty->setSmartyVar('force_compile', true);
 		$this->smarty_default = clone($this->smarty);
@@ -362,7 +360,7 @@ class FrontendPlugin extends \TYPO3\CMS\Frontend\Plugin\AbstractPlugin {
 		if (!(file_exists($templateDir) && is_dir($templateDir) && file_exists($templateFile) && is_file($templateFile))) {
 			return $this->pi_getLL('pi_noTemplateFile', 'No template file configured !');
 		}
-		$this->smarty->setSmartyVar('template_dir', $templateDir);
+		$this->smarty->setTemplateDir($templateDir);
 		if (is_array($this->useConfig['smarty.']['delimiter.']) && $this->useConfig['smarty.']['delimiter.']['left'] && $this->useConfig['smarty.']['delimiter.']['right']) {
 			$this->smarty->left_delimiter = $this->useConfig['smarty.']['delimiter.']['left'];
 			$this->smarty->right_delimiter = $this->useConfig['smarty.']['delimiter.']['right'];

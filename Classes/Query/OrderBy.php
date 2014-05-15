@@ -116,7 +116,7 @@ class OrderBy {
 				$smarty = $this->rootObj->get_smartyClone();
 				$smarty->assign('orderBy', $orderBy);
 				$smarty->assign('flexItem', $flexItem_orderBy);
-				$smarty->setSmartyVar('template_dir', dirname($file));
+				$smarty->setTemplateDir(dirname($file));
 				$XML_orderBy = $smarty->display($file, md5($file));
 				$parsed_item_orderBy = GeneralUtility::xml2array($XML_orderBy);
 				if (!is_array($parsed_item_orderBy)) {

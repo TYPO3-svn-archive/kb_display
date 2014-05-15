@@ -352,6 +352,12 @@ class Generator {
 		foreach ($this->tables as $table) {
 			if (is_array($ef = $table['enableFields'])) {
 				foreach ($ef as $key => $where) {
+					if ($table['joinType'] === 'leftjoin') {
+						// When doing a LEFT JOIN then check enable fields only for non-NULL results
+						// Else this would be similar to a NATURAL JOIN as the enable-field query would yield FALSE for every
+						// record which can't join another one.
+						$where = '('.$where.') OR ('.$table['asName'].'.uid IS NULL)';
+					}
 					$this->query['WHERE'] .= ($this->query['WHERE']?' AND ':'').'('.$where.')';
 				}
 			}
