@@ -480,4 +480,17 @@ class Controller extends \thinkopen_at\kbDisplay\Settings\FlexFieldParser {
 		$this->rowProcessor->init($this, $this->rootObj);
 	}
 
+   /**
+    * Returns the joinType of the table for passed table index
+    *
+    * @param integer The index of the table for which to return the join type.
+    * @return string The join type of the table
+    */
+   public function get_joinType($idx) {
+      if (!is_object($this->tableObjects[$idx])) {
+         print_r(t3lib_div::debug_trail());
+      }
+      return $this->tableObjects[$idx]->get_joinType();
+   }
+
 }

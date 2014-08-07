@@ -330,6 +330,20 @@ class Table {
 		$this->queryGenerator->init($this, $this->rootObj);
 	}
 
+   /**
+    * Returns the joinType of this table object instance
+    *
+    * @return string The join type of this object instance
+    */
+   public function get_joinType($idx = false) {
+      if ($idx===false) {
+         return $this->joinType;
+      } else   {
+         $joinType = $this->parentObj->get_joinType($idx);
+         return $joinType;
+      }
+   }
+
 	/**
 	 * Return the "queryGenerator" object instance
 	 *

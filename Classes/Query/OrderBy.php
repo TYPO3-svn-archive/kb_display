@@ -102,9 +102,11 @@ class OrderBy {
 		list($field, $tableIdx) = explode('__', $field);
 		$tableIdx = intval($tableIdx);
 		$table = $this->parentObj->get_tableName($tableIdx);
-
+		$fieldJoinType = $this->parentObj->get_joinType($tableIdx);
+		$selfJoinType = $this->parentObj->get_joinType();
 		$parsed_item_orderBy = false;
-		if ($tableIdx === $this->tableIndex) {
+
+		if (($tableIdx === $this->tableIndex) || (($fieldJoinType === 'leftjoin') && ($selfJoinType !== 'query'))) {
 			if ($file = GeneralUtility::getFileAbsFileName($flexItem_orderBy['field_sort_custom'])) {
 				$orderBy['field'] = $field;
 				$orderBy['table'] = $table;
